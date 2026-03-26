@@ -1,6 +1,8 @@
 "use client";
 
+import type { ChangeEvent, FormEvent } from "react";
 import { useState } from "react";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 
 export default function RegisterPage() {
@@ -13,7 +15,7 @@ export default function RegisterPage() {
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     setFormData((prev) => ({
       ...prev,
@@ -21,7 +23,7 @@ export default function RegisterPage() {
     }));
   };
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
     setError("");
     setLoading(true);
@@ -40,14 +42,12 @@ export default function RegisterPage() {
         return;
       }
 
-      // Salvar token no localStorage
       localStorage.setItem("authToken", data.token);
       localStorage.setItem("user", JSON.stringify(data.user));
 
-      // Redirecionar para home ou dashboard
       router.push("/");
     } catch (err) {
-      setError("Erro de conexão");
+      setError("Erro de conexao");
       console.error(err);
     } finally {
       setLoading(false);
@@ -55,10 +55,11 @@ export default function RegisterPage() {
   };
 
   return (
-    <div>
-      <h1>Registrar</h1>
-      {error && <p style={{ color: "red" }}>{error}</p>}
-      <form onSubmit={handleSubmit}>
+    <div className="mx-auto flex min-h-screen w-full max-w-md flex-col justify-center p-6">
+      <h1 className="mb-6 text-2xl font-semibold">Registrar</h1>
+      {error && <p className="mb-4 text-red-600">{error}</p>}
+
+      <form onSubmit={handleSubmit} className="flex flex-col gap-3">
         <input
           type="text"
           name="name"
@@ -66,6 +67,7 @@ export default function RegisterPage() {
           value={formData.name}
           onChange={handleChange}
           required
+          className="rounded border border-zinc-300 px-3 py-2"
         />
         <input
           type="email"
@@ -74,6 +76,7 @@ export default function RegisterPage() {
           value={formData.email}
           onChange={handleChange}
           required
+          className="rounded border border-zinc-300 px-3 py-2"
         />
         <input
           type="password"
@@ -82,13 +85,19 @@ export default function RegisterPage() {
           value={formData.password}
           onChange={handleChange}
           required
+          className="rounded border border-zinc-300 px-3 py-2"
         />
-        <button type="submit" disabled={loading}>
+        <button
+          type="submit"
+          disabled={loading}
+          className="rounded bg-zinc-900 px-4 py-2 text-white disabled:opacity-60"
+        >
           {loading ? "Registrando..." : "Registrar"}
         </button>
       </form>
-      <p>
-        Já tem conta? <a href="/auth/login">Faça login</a>
+
+      <p className="mt-4 text-sm text-zinc-700">
+        Ja tem conta? <Link href="/auth/login" className="underline">Faca login</Link>
       </p>
     </div>
   );
