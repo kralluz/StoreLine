@@ -7,18 +7,16 @@ export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
 
-    // Validar input
     const validation = LoginSchema.safeParse(body);
     if (!validation.success) {
       return NextResponse.json(
-        { error: "Dados inválidos", details: validation.error.flatten() },
+        { error: "Dados invalidos", details: validation.error.flatten() },
         { status: 400 }
       );
     }
 
     const { email, password } = validation.data;
 
-    // Buscar usuário
     const user = await prisma.user.findUnique({
       where: { email },
     });
@@ -30,7 +28,6 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Verificar senha
     const passwordValid = await comparePasswords(password, user.passwordHash);
 
     if (!passwordValid) {
@@ -40,7 +37,6 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Gerar token
     const token = generateToken(user.id, user.email);
 
     return NextResponse.json(

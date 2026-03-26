@@ -7,33 +7,29 @@ export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
 
-    // Validar input
     const validation = RegisterSchema.safeParse(body);
     if (!validation.success) {
       return NextResponse.json(
-        { error: "Dados inválidos", details: validation.error.flatten() },
+        { error: "Dados invalidos", details: validation.error.flatten() },
         { status: 400 }
       );
     }
 
     const { name, email, password } = validation.data;
 
-    // Verificar se usuário já existe
     const existingUser = await prisma.user.findUnique({
       where: { email },
     });
 
     if (existingUser) {
       return NextResponse.json(
-        { error: "Este email já está registrado" },
+        { error: "Este email ja esta registrado" },
         { status: 400 }
       );
     }
 
-    // Hash da senha
     const passwordHash = await hashPassword(password);
 
-    // Criar usuário
     const user = await prisma.user.create({
       data: {
         name,
@@ -42,10 +38,8 @@ export async function POST(request: NextRequest) {
       },
     });
 
-    // Gerar token
     const token = generateToken(user.id, user.email);
 
-    // Criar carrinho vazio para o novo usuário
     await prisma.cart.create({
       data: {
         userId: user.id,
@@ -54,7 +48,7 @@ export async function POST(request: NextRequest) {
 
     return NextResponse.json(
       {
-        message: "Usuário registrado com sucesso",
+        message: "Usuario registrado com sucesso",
         token,
         user: {
           id: user.id,
@@ -68,7 +62,7 @@ export async function POST(request: NextRequest) {
   } catch (error) {
     console.error("Erro no registro:", error);
     return NextResponse.json(
-      { error: "Erro ao registrar usuário" },
+      { error: "Erro ao registrar usuario" },
       { status: 500 }
     );
   }
