@@ -1,6 +1,8 @@
 "use client";
 
+import type { ChangeEvent, FormEvent } from "react";
 import { useState } from "react";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 
 export default function LoginPage() {
@@ -12,7 +14,7 @@ export default function LoginPage() {
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     setFormData((prev) => ({
       ...prev,
@@ -20,7 +22,7 @@ export default function LoginPage() {
     }));
   };
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
     setError("");
     setLoading(true);
@@ -39,14 +41,12 @@ export default function LoginPage() {
         return;
       }
 
-      // Salvar token no localStorage
       localStorage.setItem("authToken", data.token);
       localStorage.setItem("user", JSON.stringify(data.user));
 
-      // Redirecionar para home
       router.push("/");
     } catch (err) {
-      setError("Erro de conexão");
+      setError("Erro de conexao");
       console.error(err);
     } finally {
       setLoading(false);
@@ -54,10 +54,11 @@ export default function LoginPage() {
   };
 
   return (
-    <div>
-      <h1>Login</h1>
-      {error && <p style={{ color: "red" }}>{error}</p>}
-      <form onSubmit={handleSubmit}>
+    <div className="mx-auto flex min-h-screen w-full max-w-md flex-col justify-center p-6">
+      <h1 className="mb-6 text-2xl font-semibold">Login</h1>
+      {error && <p className="mb-4 text-red-600">{error}</p>}
+
+      <form onSubmit={handleSubmit} className="flex flex-col gap-3">
         <input
           type="email"
           name="email"
@@ -65,6 +66,7 @@ export default function LoginPage() {
           value={formData.email}
           onChange={handleChange}
           required
+          className="rounded border border-zinc-300 px-3 py-2"
         />
         <input
           type="password"
@@ -73,13 +75,19 @@ export default function LoginPage() {
           value={formData.password}
           onChange={handleChange}
           required
+          className="rounded border border-zinc-300 px-3 py-2"
         />
-        <button type="submit" disabled={loading}>
+        <button
+          type="submit"
+          disabled={loading}
+          className="rounded bg-zinc-900 px-4 py-2 text-white disabled:opacity-60"
+        >
           {loading ? "Entrando..." : "Entrar"}
         </button>
       </form>
-      <p>
-        Não tem conta? <a href="/auth/register">Registre-se</a>
+
+      <p className="mt-4 text-sm text-zinc-700">
+        Nao tem conta? <Link href="/auth/register" className="underline">Registre-se</Link>
       </p>
     </div>
   );
