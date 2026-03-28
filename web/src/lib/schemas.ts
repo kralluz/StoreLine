@@ -27,8 +27,18 @@ export const ProductUpdateSchema = z.object({
   isActive: z.coerce.boolean().optional(),
 });
 
+export const AddCartItemSchema = z.object({
+  productId: z.string().min(1, "productId obrigatorio"),
+  quantity: z.number().int().min(1, "Quantidade minima e 1").default(1),
+});
+
+export const UpdateCartItemSchema = z.object({
+  quantity: z.number().int().min(1, "Quantidade minima e 1"),
+});
+
 export type RegisterInput = z.infer<typeof RegisterSchema>;
 export type LoginInput = z.infer<typeof LoginSchema>;
-
 export type ProductCreateInput = z.infer<typeof ProductCreateSchema>;
 export type ProductUpdateInput = z.infer<typeof ProductUpdateSchema>;
+export type AddCartItemInput = z.infer<typeof AddCartItemSchema>;
+export type UpdateCartItemInput = z.infer<typeof UpdateCartItemSchema>;

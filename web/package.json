@@ -21,13 +21,13 @@
   },
   "devDependencies": {
     "@tailwindcss/postcss": "^4",
+    "@types/jsonwebtoken": "^9.0.10",
     "@types/node": "^20",
     "@types/react": "^19",
     "@types/react-dom": "^19",
-    "@types/jsonwebtoken": "^9.0.10",
     "eslint": "^9",
     "eslint-config-next": "16.2.1",
-    "prisma": "^6.19.2",
+    "prisma": "^7.6.0",
     "tailwindcss": "^4",
     "typescript": "^5"
   }
