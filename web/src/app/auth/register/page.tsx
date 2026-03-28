@@ -35,10 +35,18 @@ export default function RegisterPage() {
         body: JSON.stringify(formData),
       });
 
-      const data = await response.json();
+      const contentType = response.headers.get("content-type") ?? "";
+      const data = contentType.includes("application/json")
+        ? await response.json()
+        : null;
 
       if (!response.ok) {
-        setError(data.error || "Erro ao registrar");
+        setError(data?.error || "Erro ao registrar");
+        return;
+      }
+
+      if (!data?.token || !data?.user) {
+        setError("Resposta invalida do servidor");
         return;
       }
 
