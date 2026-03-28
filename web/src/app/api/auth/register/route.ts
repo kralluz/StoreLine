@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
+import { Prisma } from "@prisma/client";
 import { prisma } from "@/lib/prisma";
 import { hashPassword, generateToken } from "@/lib/auth";
 import { RegisterSchema } from "@/lib/schemas";
@@ -61,6 +62,17 @@ export async function POST(request: NextRequest) {
     );
   } catch (error) {
     console.error("Erro no registro:", error);
+
+    if (
+      error instanceof Prisma.PrismaClientInitializationError &&
+      error.message.includes("DATABASE_URL")
+    ) {
+      return NextResponse.json(
+        { error: "Configuracao ausente: defina DATABASE_URL no ambiente" },
+        { status: 500 }
+      );
+    }
+
     return NextResponse.json(
       { error: "Erro ao registrar usuario" },
       { status: 500 }
