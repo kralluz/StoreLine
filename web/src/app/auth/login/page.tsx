@@ -4,9 +4,11 @@ import type { ChangeEvent, FormEvent } from "react";
 import { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import { useAuth } from "@/components/auth-context";
 
 export default function LoginPage() {
   const router = useRouter();
+  const { login } = useAuth();
   const [formData, setFormData] = useState({
     email: "",
     password: "",
@@ -41,8 +43,7 @@ export default function LoginPage() {
         return;
       }
 
-      localStorage.setItem("authToken", data.token);
-      localStorage.setItem("user", JSON.stringify(data.user));
+      login(data.token, data.user);
 
       router.push("/");
     } catch (err) {
