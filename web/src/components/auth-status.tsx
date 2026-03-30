@@ -1,44 +1,23 @@
 "use client";
 
 import Link from "next/link";
-import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-
-type StoredUser = {
-  name?: string;
-};
+import { useAuth } from "@/components/auth-context";
 
 export default function AuthStatus() {
   const router = useRouter();
-  const [userName, setUserName] = useState<string | null>(null);
-
-  useEffect(() => {
-    const rawUser = localStorage.getItem("user");
-    if (!rawUser) {
-      setUserName(null);
-      return;
-    }
-
-    try {
-      const parsedUser = JSON.parse(rawUser) as StoredUser;
-      setUserName(parsedUser.name?.trim() || "Usuario");
-    } catch {
-      setUserName(null);
-    }
-  }, []);
+  const { user, logout } = useAuth();
 
   const handleLogout = () => {
-    localStorage.removeItem("authToken");
-    localStorage.removeItem("user");
-    setUserName(null);
+    logout();
     router.push("/");
   };
 
-  if (userName) {
+  if (user) {
     return (
       <div className="flex items-center gap-2">
         <div className="rounded-full border border-zinc-300 px-3 py-1.5 text-sm font-medium">
-          {userName}
+          {user.name}
         </div>
         <button
           type="button"

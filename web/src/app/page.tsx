@@ -1,3 +1,5 @@
+"use client";
+
 import Link from "next/link";
 
 export default function Home() {
@@ -8,12 +10,6 @@ export default function Home() {
       <div className="flex gap-3">
         <Link href="/produtos" className="rounded border border-zinc-300 px-4 py-2">
           Ver produtos
-        </Link>
-        <Link href="/auth/login" className="rounded bg-zinc-900 px-4 py-2 text-white">
-          Entrar
-        </Link>
-        <Link href="/auth/register" className="rounded border border-zinc-300 px-4 py-2">
-          Criar conta
         </Link>
       </div>
     </div>
