@@ -24,7 +24,7 @@ export async function POST(request: NextRequest) {
 
     if (existingUser) {
       return NextResponse.json(
-        { error: "Este email ja esta registrado" },
+        { error: "Credencial invalida" },
         { status: 400 }
       );
     }
