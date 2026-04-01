@@ -3,10 +3,12 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import { StatusBadge } from "@/components/status-badge";
+import { page, card, text, btn, table, feedback, type OrderStatus } from "@/lib/ui";
 
 type AdminOrderSummary = {
   id: string;
-  status: "PENDING" | "CONFIRMED" | "CANCELLED";
+  status: OrderStatus;
   subtotal: string;
   total: string;
   createdAt: string;
@@ -31,10 +33,14 @@ function getLocalUserRole(): string | null {
   }
 }
 
-function formatStatus(status: AdminOrderSummary["status"]) {
-  if (status === "CONFIRMED") return "Confirmada";
-  if (status === "CANCELLED") return "Cancelada";
-  return "Pendente";
+function formatDate(iso: string) {
+  return new Date(iso).toLocaleDateString("pt-BR", {
+    day: "2-digit",
+    month: "short",
+    year: "numeric",
+    hour: "2-digit",
+    minute: "2-digit",
+  });
 }
 
 export default function AdminComprasPage() {
@@ -46,19 +52,11 @@ export default function AdminComprasPage() {
   async function loadOrders() {
     setError("");
     const token = getAuthToken();
-
     const response = await fetch("/api/compras?all=1", {
-      headers: {
-        authorization: token ? `Bearer ${token}` : "",
-      },
+      headers: { authorization: token ? `Bearer ${token}` : "" },
     });
-
     const data = (await response.json()) as { orders?: AdminOrderSummary[]; error?: string };
-
-    if (!response.ok) {
-      throw new Error(data.error || "Erro ao carregar compras");
-    }
-
+    if (!response.ok) throw new Error(data.error || "Erro ao carregar compras");
     setOrders(data.orders ?? []);
   }
 
@@ -68,75 +66,180 @@ export default function AdminComprasPage() {
       router.replace("/auth/login");
       return;
     }
-
     loadOrders()
-      .catch((e: unknown) => {
-        setError(e instanceof Error ? e.message : "Erro ao carregar");
-      })
-      .finally(() => {
-        setLoading(false);
-      });
+      .catch((e: unknown) => setError(e instanceof Error ? e.message : "Erro ao carregar"))
+      .finally(() => setLoading(false));
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
+  // ── Loading ──────────────────────────────────────────────────────────────
   if (loading) {
     return (
-      <div className="mx-auto flex min-h-screen w-full max-w-5xl flex-col gap-6 p-8">
-        <h1 className="text-3xl font-semibold">Admin / Compras</h1>
-        <p className="text-zinc-700">Carregando...</p>
+      <div className={`${page.wide} flex flex-col gap-6`}>
+        <h1 className={text.pageTitle}>Admin · Compras</h1>
+        <p className={feedback.loading}>Carregando...</p>
       </div>
     );
   }
 
+  // ── Conteúdo ──────────────────────────────────────────────────────────────
   return (
-    <div className="mx-auto flex min-h-screen w-full max-w-5xl flex-col gap-6 p-8">
-      <div className="flex items-center justify-between gap-4">
-        <h1 className="text-3xl font-semibold">Admin / Compras</h1>
-        <div className="flex gap-3">
-          <button type="button" onClick={() => loadOrders().catch(() => {})} className="text-sm underline">
+    <div className={`${page.wide} flex flex-col gap-6`}>
+
+      {/* Cabeçalho */}
+      <div className={page.header}>
+        <div>
+          <p className={text.label}>Painel Admin</p>
+          <h1 className={text.pageTitle}>Compras</h1>
+        </div>
+        <div className="flex flex-wrap items-center gap-2">
+          <button
+            type="button"
+            onClick={() => loadOrders().catch(() => {})}
+            className={btn.ghost}
+          >
             Atualizar
           </button>
-          <Link href="/admin/produtos" className="text-sm underline">
-            Admin / Produtos
+          <Link href="/admin/produtos" className={btn.ghost}>
+            Produtos
           </Link>
-          <Link href="/" className="text-sm underline">
+          <Link href="/" className={btn.ghost}>
             Home
           </Link>
         </div>
       </div>
 
-      {error && <p className="text-red-600">{error}</p>}
+      {/* Erro */}
+      {error && <p className={feedback.error}>{error}</p>}
 
-      <section className="rounded border border-zinc-200 p-4">
-        <h2 className="text-lg font-medium">Historico de compras</h2>
+      {/* Sumário rápido */}
+      <div className="grid grid-cols-2 gap-3 sm:grid-cols-3">
+        <div className={`${card.base} flex flex-col gap-1`}>
+          <span className={text.label}>Total de pedidos</span>
+          <span className="text-2xl font-bold text-zinc-900">{orders.length}</span>
+        </div>
+        <div className={`${card.base} flex flex-col gap-1`}>
+          <span className={text.label}>Pendentes</span>
+          <span className="text-2xl font-bold text-amber-600">
+            {orders.filter((o) => o.status === "PENDING").length}
+          </span>
+        </div>
+        <div className={`${card.base} col-span-2 flex flex-col gap-1 sm:col-span-1`}>
+          <span className={text.label}>Confirmadas</span>
+          <span className="text-2xl font-bold text-emerald-600">
+            {orders.filter((o) => o.status === "CONFIRMED").length}
+          </span>
+        </div>
+      </div>
+
+      {/* Tabela de pedidos */}
+      <div className={card.base}>
+        <h2 className={`${text.sectionTitle} mb-4`}>
+          Histórico global{" "}
+          <span className="ml-1 rounded-full bg-zinc-100 px-2 py-0.5 text-xs font-medium text-zinc-600">
+            {orders.length}
+          </span>
+        </h2>
 
         {orders.length === 0 ? (
-          <p className="mt-3 text-zinc-700">Nenhuma compra encontrada.</p>
+          <div className={feedback.empty}>
+            <p className="text-4xl mb-3">📦</p>
+            <p>Nenhuma compra registrada ainda.</p>
+          </div>
         ) : (
-          <ul className="mt-3 flex flex-col gap-2">
-            {orders.map((o) => (
-              <li key={o.id} className="rounded border border-zinc-200 p-3">
-                <div className="flex items-start justify-between gap-4">
-                  <div className="min-w-0">
-                    <p className="truncate font-medium">Compra #{o.id}</p>
-                    <p className="text-sm text-zinc-700">
-                      {formatStatus(o.status)} • Itens: {o.itemCount} • R$ {o.total}
-                    </p>
-                    <p className="mt-1 text-xs text-zinc-600">
-                      {new Date(o.createdAt).toLocaleString("pt-BR")}
-                      {o.user ? ` • ${o.user.name} (${o.user.email})` : ""}
-                    </p>
-                  </div>
+          <>
+            {/* Desktop: tabela */}
+            <div className={`${table.wrapper} hidden sm:block`}>
+              <table className={table.base}>
+                <thead className={table.thead}>
+                  <tr>
+                    <th className={table.th}>Pedido</th>
+                    <th className={table.th}>Cliente</th>
+                    <th className={table.th}>Status</th>
+                    <th className={table.thRight}>Itens</th>
+                    <th className={table.thRight}>Total</th>
+                    <th className={table.th}>Data</th>
+                    <th className={table.th}></th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-zinc-100 bg-white">
+                  {orders.map((o) => (
+                    <tr key={o.id} className={table.tr}>
+                      <td className={table.td}>
+                        <span className="font-mono text-xs text-zinc-500">
+                          #{o.id.slice(0, 8)}…
+                        </span>
+                      </td>
+                      <td className={table.td}>
+                        {o.user ? (
+                          <div className="flex flex-col">
+                            <span className="font-medium text-zinc-900">{o.user.name}</span>
+                            <span className="text-xs text-zinc-400">{o.user.email}</span>
+                          </div>
+                        ) : (
+                          <span className="text-zinc-400">—</span>
+                        )}
+                      </td>
+                      <td className={table.td}>
+                        <StatusBadge status={o.status} />
+                      </td>
+                      <td className={table.tdRight}>{o.itemCount}</td>
+                      <td className={`${table.tdRight} font-semibold text-zinc-900`}>
+                        R$ {Number(o.total).toFixed(2)}
+                      </td>
+                      <td className={`${table.td} whitespace-nowrap text-xs text-zinc-500`}>
+                        {formatDate(o.createdAt)}
+                      </td>
+                      <td className={table.td}>
+                        <Link href={`/compras/${o.id}`} className={btn.ghost}>
+                          Ver →
+                        </Link>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
 
-                  <Link href={`/compras/${o.id}`} className="text-sm underline">
-                    Ver
-                  </Link>
-                </div>
-              </li>
-            ))}
-          </ul>
+            {/* Mobile: cards */}
+            <ul className="flex flex-col gap-3 sm:hidden">
+              {orders.map((o) => (
+                <li key={o.id} className={card.item}>
+                  <div className="flex flex-col gap-2">
+                    <div className="flex items-start justify-between gap-2">
+                      <div className="flex flex-col gap-1 min-w-0">
+                        <span className="font-mono text-xs text-zinc-400">
+                          #{o.id.slice(0, 8)}…
+                        </span>
+                        {o.user && (
+                          <span className="truncate font-medium text-zinc-900">{o.user.name}</span>
+                        )}
+                        {o.user && (
+                          <span className="truncate text-xs text-zinc-400">{o.user.email}</span>
+                        )}
+                      </div>
+                      <StatusBadge status={o.status} />
+                    </div>
+                    <div className="flex items-center justify-between">
+                      <span className={text.label}>
+                        {o.itemCount} {o.itemCount === 1 ? "item" : "itens"} •{" "}
+                        {formatDate(o.createdAt)}
+                      </span>
+                      <span className="font-bold text-zinc-900">
+                        R$ {Number(o.total).toFixed(2)}
+                      </span>
+                    </div>
+                    <Link href={`/compras/${o.id}`} className={`${btn.ghost} w-fit`}>
+                      Ver detalhes →
+                    </Link>
+                  </div>
+                </li>
+              ))}
+            </ul>
+          </>
         )}
-      </section>
+      </div>
+
     </div>
   );
 }
