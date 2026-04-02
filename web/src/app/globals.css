@@ -3,11 +3,25 @@
 :root {
   --background: #ffffff;
   --foreground: #171717;
+  --surface: #ffffff;
+  --border-light: #e4e4e7;
+  --border-default: #d4d4d8;
+  --text-muted: #3f3f46;
+  --text-subtle: #52525b;
+  --button-primary: #18181b;
+  --status-error: #dc2626;
 }
 
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
+  --color-surface: var(--surface);
+  --color-border-light: var(--border-light);
+  --color-border-default: var(--border-default);
+  --color-text-muted: var(--text-muted);
+  --color-text-subtle: var(--text-subtle);
+  --color-button-primary: var(--button-primary);
+  --color-status-error: var(--status-error);
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
 }
@@ -16,11 +30,18 @@
   :root {
     --background: #0a0a0a;
     --foreground: #ededed;
+    --surface: #111111;
+    --border-light: #27272a;
+    --border-default: #3f3f46;
+    --text-muted: #d4d4d8;
+    --text-subtle: #a1a1aa;
+    --button-primary: #fafafa;
+    --status-error: #f87171;
   }
 }
 
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: var(--font-sans), Arial, Helvetica, sans-serif;
 }
