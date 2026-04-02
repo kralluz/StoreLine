@@ -34,3 +34,8 @@ cd web
 npm install
 npm run dev
 ```
+
+## Documentacao de entrega
+
+- [Roteiro de apresentacao](docs/roteiro-apresentacao.md)
+- [Documentacao final](docs/entrega-final.md)
