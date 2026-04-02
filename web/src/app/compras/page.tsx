@@ -1,20 +1,14 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
-import {
-  Alert,
-  Button,
-  Card,
-  PageContainer,
-  PageHeader,
-  StatusBadge,
-  TextLink,
-} from "@/components/ui";
+import { StatusBadge } from "@/components/status-badge";
+import { page, card, text, btn, feedback, type OrderStatus } from "@/lib/ui";
 
 type OrderSummary = {
   id: string;
-  status: "PENDING" | "CONFIRMED" | "CANCELLED";
+  status: OrderStatus;
   subtotal: string;
   total: string;
   createdAt: string;
@@ -38,6 +32,16 @@ function getLocalUserId(): string | null {
   }
 }
 
+function formatDate(iso: string) {
+  return new Date(iso).toLocaleDateString("pt-BR", {
+    day: "2-digit",
+    month: "short",
+    year: "numeric",
+    hour: "2-digit",
+    minute: "2-digit",
+  });
+}
+
 export default function MinhasComprasPage() {
   const router = useRouter();
   const [loading, setLoading] = useState(true);
@@ -49,57 +53,36 @@ export default function MinhasComprasPage() {
     setError("");
     const token = getAuthToken();
     if (!token) throw new Error("Token ausente");
-
     const userId = getLocalUserId();
     if (!userId) throw new Error("Usuario ausente");
 
     const response = await fetch(`/api/compras/${userId}`, {
-      headers: {
-        authorization: `Bearer ${token}`,
-      },
+      headers: { authorization: `Bearer ${token}` },
     });
-
     const data = (await response.json()) as { orders?: OrderSummary[]; error?: string };
-
-    if (!response.ok) {
-      throw new Error(data.error || "Erro ao carregar compras");
-    }
-
+    if (!response.ok) throw new Error(data.error || "Erro ao carregar compras");
     setOrders(data.orders ?? []);
   }
 
   async function finalizePurchase() {
     setFinalizing(true);
     setError("");
-
     try {
       const token = getAuthToken();
       if (!token) throw new Error("Token ausente");
-
       const userId = getLocalUserId();
       if (!userId) throw new Error("Usuario ausente");
 
       const response = await fetch(`/api/compras/${userId}`, {
         method: "POST",
-        headers: {
-          authorization: `Bearer ${token}`,
-        },
+        headers: { authorization: `Bearer ${token}` },
       });
-
-      const data = (await response.json()) as {
-        error?: string;
-        order?: { id: string };
-      };
-
-      if (!response.ok) {
-        throw new Error(data.error || "Erro ao finalizar compra");
-      }
-
+      const data = (await response.json()) as { error?: string; order?: { id: string } };
+      if (!response.ok) throw new Error(data.error || "Erro ao finalizar compra");
       if (data.order?.id) {
         router.push(`/compras/${data.order.id}`);
         return;
       }
-
       await loadOrders();
     } catch (e: unknown) {
       setError(e instanceof Error ? e.message : "Erro ao finalizar compra");
@@ -115,89 +98,114 @@ export default function MinhasComprasPage() {
       router.replace("/auth/login");
       return;
     }
-
     loadOrders()
-      .catch((e: unknown) => {
-        setError(e instanceof Error ? e.message : "Erro ao carregar compras");
-      })
-      .finally(() => {
-        setLoading(false);
-      });
+      .catch((e: unknown) => setError(e instanceof Error ? e.message : "Erro ao carregar compras"))
+      .finally(() => setLoading(false));
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
+  // ── Loading ──────────────────────────────────────────────────────────────
   if (loading) {
     return (
-      <PageContainer maxWidth="3xl">
-        <h1 className="text-3xl font-semibold">Minhas compras</h1>
-        <p className="text-zinc-700">Carregando...</p>
-      </PageContainer>
+      <div className={`${page.narrow} flex flex-col gap-6`}>
+        <h1 className={text.pageTitle}>Minhas compras</h1>
+        <p className={feedback.loading}>Carregando...</p>
+      </div>
     );
   }
 
+  // ── Conteúdo principal ───────────────────────────────────────────────────
   return (
-    <PageContainer maxWidth="3xl">
-      <PageHeader
-        title="Minhas compras"
-        actions={
-          <>
-            <Button
-              type="button"
-              onClick={() => loadOrders().catch((e) => setError(e instanceof Error ? e.message : "Erro"))}
-              variant="text"
-              disabled={finalizing}
-            >
-              Atualizar
-            </Button>
-            <TextLink href="/">Home</TextLink>
-          </>
-        }
-      />
+    <div className={`${page.narrow} flex flex-col gap-6`}>
 
-      <Alert message={error} />
+      {/* Cabeçalho */}
+      <div className={page.header}>
+        <h1 className={text.pageTitle}>Minhas compras</h1>
+        <div className="flex items-center gap-2">
+          <button
+            type="button"
+            onClick={() => loadOrders().catch((e) => setError(e instanceof Error ? e.message : "Erro"))}
+            className={btn.ghost}
+            disabled={finalizing}
+          >
+            Atualizar
+          </button>
+          <Link href="/" className={btn.ghost}>
+            Home
+          </Link>
+        </div>
+      </div>
 
-      <Card>
-        <div className="flex items-center justify-between gap-4">
-          <h2 className="text-lg font-medium">Finalizar compra</h2>
-          <Button
+      {/* Erro */}
+      {error && <p className={feedback.error}>{error}</p>}
+
+      {/* Finalizar compra */}
+      <div className={card.base}>
+        <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+          <div>
+            <h2 className={text.sectionTitle}>Finalizar compra</h2>
+            <p className="mt-1 text-sm text-zinc-500">
+              Converte os itens do seu carrinho em um pedido.
+            </p>
+          </div>
+          <button
             type="button"
             onClick={finalizePurchase}
-            variant="primary"
+            className={btn.success}
             disabled={finalizing}
           >
             {finalizing ? "Finalizando..." : "Finalizar compra"}
-          </Button>
+          </button>
         </div>
-        <p className="mt-2 text-sm text-zinc-700">
-          Finaliza a compra usando os itens atuais do seu carrinho.
-        </p>
-      </Card>
+      </div>
 
-      <Card title="Historico" contentClassName="mt-3">
+      {/* Histórico */}
+      <div className={card.base}>
+        <h2 className={`${text.sectionTitle} mb-4`}>Histórico de pedidos</h2>
+
         {orders.length === 0 ? (
-          <p className="text-zinc-700">Nenhuma compra encontrada.</p>
+          <div className={feedback.empty}>
+            <p className="text-4xl mb-3">🛍️</p>
+            <p>Nenhuma compra encontrada.</p>
+            <p className="mt-1 text-zinc-400">Adicione itens ao carrinho e finalize uma compra.</p>
+          </div>
         ) : (
-          <ul className="flex flex-col gap-2">
+          <ul className="flex flex-col gap-3">
             {orders.map((o) => (
-              <Card key={o.id} as="li" className="p-3" contentClassName="">
-                <div className="flex items-start justify-between gap-4">
-                  <div className="min-w-0">
-                    <p className="truncate font-medium">Compra #{o.id}</p>
-                    <p className="text-sm text-zinc-700">
-                      <StatusBadge status={o.status} /> • Itens: {o.itemCount} • R$ {o.total}
-                    </p>
-                    <p className="mt-1 text-xs text-zinc-600">
-                      {new Date(o.createdAt).toLocaleString("pt-BR")}
+              <li key={o.id} className={card.item}>
+                <div className="flex flex-col gap-2 sm:flex-row sm:items-start sm:justify-between">
+
+                  {/* Info do pedido */}
+                  <div className="flex flex-col gap-1 min-w-0">
+                    <div className="flex flex-wrap items-center gap-2">
+                      <span className={`${text.strong} truncate`}>
+                        Pedido #{o.id.slice(0, 8)}…
+                      </span>
+                      <StatusBadge status={o.status} />
+                    </div>
+                    <p className={text.label}>
+                      {o.itemCount} {o.itemCount === 1 ? "item" : "itens"} •{" "}
+                      {formatDate(o.createdAt)}
                     </p>
                   </div>
 
-                  <TextLink href={`/compras/${o.id}`}>Ver</TextLink>
+                  {/* Total + ação */}
+                  <div className="flex items-center justify-between gap-4 sm:flex-col sm:items-end">
+                    <p className="text-base font-bold text-zinc-900">
+                      R$ {Number(o.total).toFixed(2)}
+                    </p>
+                    <Link href={`/compras/${o.id}`} className={btn.ghost}>
+                      Ver detalhes →
+                    </Link>
+                  </div>
+
                 </div>
-              </Card>
+              </li>
             ))}
           </ul>
         )}
-      </Card>
-    </PageContainer>
+      </div>
+
+    </div>
   );
 }
