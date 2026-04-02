@@ -1,8 +1,15 @@
 "use client";
 
 import { useEffect, useMemo, useState, type FormEvent } from "react";
-import Link from "next/link";
 import { useRouter } from "next/navigation";
+import {
+  Alert,
+  Button,
+  Card,
+  PageContainer,
+  PageHeader,
+  TextLink,
+} from "@/components/ui";
 
 type Product = {
   id: string;
@@ -186,40 +193,38 @@ export default function AdminProdutosPage() {
 
   if (loading) {
     return (
-      <div className="mx-auto flex min-h-screen w-full max-w-4xl flex-col gap-6 p-8">
+      <PageContainer maxWidth="4xl">
         <h1 className="text-3xl font-semibold">Admin / Produtos</h1>
         <p className="text-zinc-700">Carregando...</p>
-      </div>
+      </PageContainer>
     );
   }
 
   return (
-    <div className="mx-auto flex min-h-screen w-full max-w-4xl flex-col gap-6 p-8">
-      <div className="flex items-center justify-between gap-4">
-        <h1 className="text-3xl font-semibold">Admin / Produtos</h1>
-        <div className="flex gap-3">
-          <Link href="/produtos" className="text-sm underline">
-            Ver listagem publica
-          </Link>
-          <Link href="/" className="text-sm underline">
-            Home
-          </Link>
-        </div>
-      </div>
+    <PageContainer maxWidth="4xl">
+      <PageHeader
+        title="Admin / Produtos"
+        actions={
+          <>
+            <TextLink href="/produtos">Ver listagem publica</TextLink>
+            <TextLink href="/">Home</TextLink>
+          </>
+        }
+      />
 
-      {error && <p className="text-red-600">{error}</p>}
+      <Alert message={error} />
 
-      <section className="rounded border border-zinc-200 p-4">
+      <Card>
         <div className="flex items-center justify-between gap-4">
           <h2 className="text-lg font-medium">{isEditing ? "Editar" : "Novo"} produto</h2>
-          <button
+          <Button
             type="button"
             onClick={startCreate}
-            className="text-sm underline"
+            variant="text"
             disabled={saving}
           >
             Limpar
-          </button>
+          </Button>
         </div>
 
         <form onSubmit={onSubmit} className="mt-4 grid gap-3">
@@ -272,24 +277,22 @@ export default function AdminProdutosPage() {
             Ativo (visivel na listagem publica)
           </label>
 
-          <button
+          <Button
             type="submit"
             disabled={saving}
-            className="rounded bg-zinc-900 px-4 py-2 text-white disabled:opacity-60"
           >
             {saving ? "Salvando..." : isEditing ? "Salvar" : "Criar"}
-          </button>
+          </Button>
         </form>
-      </section>
+      </Card>
 
-      <section className="rounded border border-zinc-200 p-4">
-        <h2 className="text-lg font-medium">Produtos</h2>
+      <Card title="Produtos" contentClassName="mt-3">
         {products.length === 0 ? (
-          <p className="mt-3 text-zinc-700">Nenhum produto cadastrado.</p>
+          <p className="text-zinc-700">Nenhum produto cadastrado.</p>
         ) : (
-          <ul className="mt-3 flex flex-col gap-2">
+          <ul className="flex flex-col gap-2">
             {products.map((p) => (
-              <li key={p.id} className="rounded border border-zinc-200 p-3">
+              <Card key={p.id} as="li" className="p-3" contentClassName="">
                 <div className="flex items-start justify-between gap-4">
                   <div className="min-w-0">
                     <p className="truncate font-medium">
@@ -300,23 +303,24 @@ export default function AdminProdutosPage() {
                   </div>
 
                   <div className="flex gap-3">
-                    <button type="button" onClick={() => startEdit(p)} className="text-sm underline">
+                    <Button type="button" onClick={() => startEdit(p)} variant="text">
                       Editar
-                    </button>
-                    <button
+                    </Button>
+                    <Button
                       type="button"
                       onClick={() => onDelete(p.id)}
-                      className="text-sm underline text-red-700"
+                      variant="text"
+                      className="text-red-700"
                     >
                       Remover
-                    </button>
+                    </Button>
                   </div>
                 </div>
-              </li>
+              </Card>
             ))}
           </ul>
         )}
-      </section>
-    </div>
+      </Card>
+    </PageContainer>
   );
 }

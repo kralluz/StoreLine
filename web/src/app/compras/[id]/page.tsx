@@ -1,8 +1,15 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import Link from "next/link";
 import { useRouter } from "next/navigation";
+import {
+  Alert,
+  Card,
+  PageContainer,
+  PageHeader,
+  StatusBadge,
+  TextLink,
+} from "@/components/ui";
 
 type OrderItem = {
   id: string;
@@ -28,12 +35,6 @@ type Props = { params: Promise<{ id: string }> };
 function getAuthToken(): string | null {
   if (typeof window === "undefined") return null;
   return localStorage.getItem("authToken");
-}
-
-function formatStatus(status: OrderDetail["status"]) {
-  if (status === "CONFIRMED") return "Confirmada";
-  if (status === "CANCELLED") return "Cancelada";
-  return "Pendente";
 }
 
 export default function CompraDetalhePage({ params }: Props) {
@@ -79,57 +80,52 @@ export default function CompraDetalhePage({ params }: Props) {
 
   if (loading) {
     return (
-      <div className="mx-auto flex min-h-screen w-full max-w-3xl flex-col gap-6 p-8">
+      <PageContainer maxWidth="3xl">
         <h1 className="text-3xl font-semibold">Detalhe da compra</h1>
         <p className="text-zinc-700">Carregando...</p>
-      </div>
+      </PageContainer>
     );
   }
 
   if (error || !order) {
     return (
-      <div className="mx-auto flex min-h-screen w-full max-w-3xl flex-col gap-6 p-8">
-        <div className="flex items-center justify-between gap-4">
-          <h1 className="text-3xl font-semibold">Detalhe da compra</h1>
-          <Link href="/compras" className="text-sm underline">
-            Voltar
-          </Link>
-        </div>
-        <p className="text-red-600">{error || "Compra nao encontrada"}</p>
-      </div>
+      <PageContainer maxWidth="3xl">
+        <PageHeader
+          title="Detalhe da compra"
+          actions={<TextLink href="/compras">Voltar</TextLink>}
+        />
+        <Alert message={error || "Compra nao encontrada"} />
+      </PageContainer>
     );
   }
 
   return (
-    <div className="mx-auto flex min-h-screen w-full max-w-3xl flex-col gap-6 p-8">
-      <div className="flex items-center justify-between gap-4">
-        <h1 className="text-3xl font-semibold">Compra #{order.id}</h1>
-        <div className="flex gap-3">
-          <Link href="/compras" className="text-sm underline">
-            Minhas compras
-          </Link>
-          <Link href="/" className="text-sm underline">
-            Home
-          </Link>
-        </div>
-      </div>
+    <PageContainer maxWidth="3xl">
+      <PageHeader
+        title={`Compra #${order.id}`}
+        actions={
+          <>
+            <TextLink href="/compras">Minhas compras</TextLink>
+            <TextLink href="/">Home</TextLink>
+          </>
+        }
+      />
 
-      <section className="rounded border border-zinc-200 p-4">
-        <p className="font-medium">{formatStatus(order.status)}</p>
+      <Card>
+        <StatusBadge status={order.status} />
         <p className="mt-1 text-sm text-zinc-700">
           Criada em {new Date(order.createdAt).toLocaleString("pt-BR")}
         </p>
-      </section>
+      </Card>
 
-      <section className="rounded border border-zinc-200 p-4">
-        <h2 className="text-lg font-medium">Itens</h2>
+      <Card title="Itens" contentClassName="mt-3">
 
         {order.items.length === 0 ? (
-          <p className="mt-3 text-zinc-700">Nenhum item.</p>
+          <p className="text-zinc-700">Nenhum item.</p>
         ) : (
-          <ul className="mt-3 flex flex-col gap-2">
+          <ul className="flex flex-col gap-2">
             {order.items.map((i) => (
-              <li key={i.id} className="rounded border border-zinc-200 p-3">
+              <Card key={i.id} as="li" className="p-3" contentClassName="">
                 <div className="flex items-start justify-between gap-4">
                   <div className="min-w-0">
                     <p className="truncate font-medium">{i.productName}</p>
@@ -139,13 +135,13 @@ export default function CompraDetalhePage({ params }: Props) {
                   </div>
                   <p className="text-sm font-medium">R$ {i.lineSubtotal}</p>
                 </div>
-              </li>
+              </Card>
             ))}
           </ul>
         )}
-      </section>
+      </Card>
 
-      <section className="rounded border border-zinc-200 p-4">
+      <Card>
         <div className="flex items-center justify-between">
           <p className="text-sm text-zinc-700">Subtotal</p>
           <p className="font-medium">R$ {order.subtotal}</p>
@@ -154,7 +150,7 @@ export default function CompraDetalhePage({ params }: Props) {
           <p className="text-sm text-zinc-700">Total</p>
           <p className="text-lg font-semibold">R$ {order.total}</p>
         </div>
-      </section>
-    </div>
+      </Card>
+    </PageContainer>
   );
 }

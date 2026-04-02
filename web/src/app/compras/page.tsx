@@ -1,8 +1,16 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import Link from "next/link";
 import { useRouter } from "next/navigation";
+import {
+  Alert,
+  Button,
+  Card,
+  PageContainer,
+  PageHeader,
+  StatusBadge,
+  TextLink,
+} from "@/components/ui";
 
 type OrderSummary = {
   id: string;
@@ -28,12 +36,6 @@ function getLocalUserId(): string | null {
   } catch {
     return null;
   }
-}
-
-function formatStatus(status: OrderSummary["status"]) {
-  if (status === "CONFIRMED") return "Confirmada";
-  if (status === "CANCELLED") return "Cancelada";
-  return "Pendente";
 }
 
 export default function MinhasComprasPage() {
@@ -126,79 +128,76 @@ export default function MinhasComprasPage() {
 
   if (loading) {
     return (
-      <div className="mx-auto flex min-h-screen w-full max-w-3xl flex-col gap-6 p-8">
+      <PageContainer maxWidth="3xl">
         <h1 className="text-3xl font-semibold">Minhas compras</h1>
         <p className="text-zinc-700">Carregando...</p>
-      </div>
+      </PageContainer>
     );
   }
 
   return (
-    <div className="mx-auto flex min-h-screen w-full max-w-3xl flex-col gap-6 p-8">
-      <div className="flex items-center justify-between gap-4">
-        <h1 className="text-3xl font-semibold">Minhas compras</h1>
-        <div className="flex gap-3">
-          <button
-            type="button"
-            onClick={() => loadOrders().catch((e) => setError(e instanceof Error ? e.message : "Erro"))}
-            className="text-sm underline"
-            disabled={finalizing}
-          >
-            Atualizar
-          </button>
-          <Link href="/" className="text-sm underline">
-            Home
-          </Link>
-        </div>
-      </div>
+    <PageContainer maxWidth="3xl">
+      <PageHeader
+        title="Minhas compras"
+        actions={
+          <>
+            <Button
+              type="button"
+              onClick={() => loadOrders().catch((e) => setError(e instanceof Error ? e.message : "Erro"))}
+              variant="text"
+              disabled={finalizing}
+            >
+              Atualizar
+            </Button>
+            <TextLink href="/">Home</TextLink>
+          </>
+        }
+      />
 
-      {error && <p className="text-red-600">{error}</p>}
+      <Alert message={error} />
 
-      <section className="rounded border border-zinc-200 p-4">
+      <Card>
         <div className="flex items-center justify-between gap-4">
           <h2 className="text-lg font-medium">Finalizar compra</h2>
-          <button
+          <Button
             type="button"
             onClick={finalizePurchase}
-            className="rounded bg-zinc-900 px-4 py-2 text-white disabled:opacity-60"
+            variant="primary"
             disabled={finalizing}
           >
             {finalizing ? "Finalizando..." : "Finalizar compra"}
-          </button>
+          </Button>
         </div>
         <p className="mt-2 text-sm text-zinc-700">
           Finaliza a compra usando os itens atuais do seu carrinho.
         </p>
-      </section>
+      </Card>
 
-      <section className="rounded border border-zinc-200 p-4">
-        <h2 className="text-lg font-medium">Historico</h2>
+      <Card title="Historico" contentClassName="mt-3">
         {orders.length === 0 ? (
-          <p className="mt-3 text-zinc-700">Nenhuma compra encontrada.</p>
+          <p className="text-zinc-700">Nenhuma compra encontrada.</p>
         ) : (
-          <ul className="mt-3 flex flex-col gap-2">
+          <ul className="flex flex-col gap-2">
             {orders.map((o) => (
-              <li key={o.id} className="rounded border border-zinc-200 p-3">
+              <Card key={o.id} as="li" className="p-3" contentClassName="">
                 <div className="flex items-start justify-between gap-4">
                   <div className="min-w-0">
                     <p className="truncate font-medium">Compra #{o.id}</p>
                     <p className="text-sm text-zinc-700">
-                      {formatStatus(o.status)} • Itens: {o.itemCount} • R$ {o.total}
+                      <StatusBadge status={o.status} /> • Itens: {o.itemCount} • R$ {o.total}
                     </p>
                     <p className="mt-1 text-xs text-zinc-600">
                       {new Date(o.createdAt).toLocaleString("pt-BR")}
                     </p>
                   </div>
 
-                  <Link href={`/compras/${o.id}`} className="text-sm underline">
-                    Ver
-                  </Link>
+                  <TextLink href={`/compras/${o.id}`}>Ver</TextLink>
                 </div>
-              </li>
+              </Card>
             ))}
           </ul>
         )}
-      </section>
-    </div>
+      </Card>
+    </PageContainer>
   );
 }
