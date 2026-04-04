@@ -58,10 +58,10 @@ function CartLineItem({
       <div className="flex flex-col gap-3 md:flex-row md:items-start md:justify-between">
         <div className="min-w-0">
           <p className="truncate font-medium">{item.product.name}</p>
-          <p className="text-sm text-zinc-700">
+          <p className="text-sm text-[var(--text-muted)]">
             R$ {item.product.price} • Estoque: {item.product.stock}
           </p>
-          <p className="mt-1 text-xs text-zinc-600">Item ID: {item.id}</p>
+          <p className="mt-1 text-xs text-[var(--text-subtle)]">Item ID: {item.id}</p>
         </div>
 
         <div className="grid gap-2 md:min-w-[280px]">
@@ -83,7 +83,7 @@ function CartLineItem({
               value={quantityText}
               onChange={(e) => setQuantityText(e.target.value)}
               aria-label={`Quantidade de ${item.product.name}`}
-              className="rounded border border-zinc-300 px-3 py-2"
+              className="rounded border border-[var(--border-default)] px-3 py-2"
               disabled={isUpdating || isRemoving}
             />
             <Button
@@ -123,7 +123,7 @@ function CartLineItem({
               {isRemoving ? "Removendo..." : "Remover"}
             </Button>
           </div>
-          <p className="text-sm text-zinc-700">
+          <p className="text-sm text-[var(--text-muted)]">
             Subtotal: R$ {Number(item.lineSubtotal).toFixed(2)}
           </p>
         </div>
@@ -372,7 +372,7 @@ export default function CarrinhoPage() {
     return (
       <PageContainer maxWidth="4xl">
         <h1 className="text-3xl font-semibold">Carrinho</h1>
-        <p className="text-zinc-700">Carregando...</p>
+        <p className="text-[var(--text-muted)]">Carregando...</p>
       </PageContainer>
     );
   }
@@ -399,7 +399,7 @@ export default function CarrinhoPage() {
             onChange={(e) => setNewProductId(e.target.value)}
             placeholder="ID do produto"
             aria-label="ID do produto para adicionar ao carrinho"
-            className="rounded border border-zinc-300 px-3 py-2"
+            className="rounded border border-[var(--border-default)] px-3 py-2"
             required
             disabled={adding}
           />
@@ -410,7 +410,7 @@ export default function CarrinhoPage() {
             value={newQuantity}
             onChange={(e) => setNewQuantity(e.target.value)}
             aria-label="Quantidade para adicionar ao carrinho"
-            className="rounded border border-zinc-300 px-3 py-2"
+            className="rounded border border-[var(--border-default)] px-3 py-2"
             required
             disabled={adding}
           />
@@ -425,7 +425,7 @@ export default function CarrinhoPage() {
         contentClassName="mt-3"
       >
         {!cart || cart.items.length === 0 ? (
-          <p className="text-zinc-700">Seu carrinho esta vazio.</p>
+          <p className="text-[var(--text-muted)]">Seu carrinho esta vazio.</p>
         ) : (
           <ul className="flex flex-col gap-2">
             {cart.items.map((item) => (
