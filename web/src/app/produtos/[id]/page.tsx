@@ -24,11 +24,11 @@ export default async function ProdutoDetalhePage({ params }: Props) {
         </Link>
       </div>
 
-      {product.description && <p className="text-zinc-700">{product.description}</p>}
+      {product.description && <p className="text-[var(--text-muted)]">{product.description}</p>}
 
-      <div className="rounded border border-zinc-200 p-4">
+      <div className="rounded border border-[var(--border-light)] p-4">
         <p className="text-lg font-medium">R$ {product.price.toString()}</p>
-        <p className="mt-1 text-sm text-zinc-700">Estoque: {product.stock}</p>
+        <p className="mt-1 text-sm text-[var(--text-muted)]">Estoque: {product.stock}</p>
       </div>
     </div>
   );

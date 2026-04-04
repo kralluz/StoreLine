@@ -195,7 +195,7 @@ export default function AdminProdutosPage() {
     return (
       <PageContainer maxWidth="4xl">
         <h1 className="text-3xl font-semibold">Admin / Produtos</h1>
-        <p className="text-zinc-700">Carregando...</p>
+        <p className="text-[var(--text-muted)]">Carregando...</p>
       </PageContainer>
     );
   }
@@ -232,7 +232,7 @@ export default function AdminProdutosPage() {
             value={form.name}
             onChange={(e) => setForm((s) => ({ ...s, name: e.target.value }))}
             placeholder="Nome"
-            className="rounded border border-zinc-300 px-3 py-2"
+            className="rounded border border-[var(--border-default)] px-3 py-2"
             required
           />
 
@@ -240,7 +240,7 @@ export default function AdminProdutosPage() {
             value={form.description}
             onChange={(e) => setForm((s) => ({ ...s, description: e.target.value }))}
             placeholder="Descricao (opcional)"
-            className="min-h-[88px] rounded border border-zinc-300 px-3 py-2"
+            className="min-h-[88px] rounded border border-[var(--border-default)] px-3 py-2"
           />
 
           <div className="grid grid-cols-2 gap-3">
@@ -252,7 +252,7 @@ export default function AdminProdutosPage() {
               value={form.price}
               onChange={(e) => setForm((s) => ({ ...s, price: e.target.value }))}
               placeholder="Preco"
-              className="rounded border border-zinc-300 px-3 py-2"
+              className="rounded border border-[var(--border-default)] px-3 py-2"
               required
             />
             <input
@@ -263,7 +263,7 @@ export default function AdminProdutosPage() {
               value={form.stock}
               onChange={(e) => setForm((s) => ({ ...s, stock: e.target.value }))}
               placeholder="Estoque"
-              className="rounded border border-zinc-300 px-3 py-2"
+              className="rounded border border-[var(--border-default)] px-3 py-2"
               required
             />
           </div>
@@ -288,7 +288,7 @@ export default function AdminProdutosPage() {
 
       <Card title="Produtos" contentClassName="mt-3">
         {products.length === 0 ? (
-          <p className="text-zinc-700">Nenhum produto cadastrado.</p>
+          <p className="text-[var(--text-muted)]">Nenhum produto cadastrado.</p>
         ) : (
           <ul className="flex flex-col gap-2">
             {products.map((p) => (
@@ -297,9 +297,9 @@ export default function AdminProdutosPage() {
                   <div className="min-w-0">
                     <p className="truncate font-medium">
                       {p.name}{" "}
-                      {!p.isActive && <span className="text-xs text-zinc-600">(inativo)</span>}
+                      {!p.isActive && <span className="text-xs text-[var(--text-subtle)]">(inativo)</span>}
                     </p>
-                    <p className="text-sm text-zinc-700">R$ {p.price} • Estoque: {p.stock}</p>
+                    <p className="text-sm text-[var(--text-muted)]">R$ {p.price} • Estoque: {p.stock}</p>
                   </div>
 
                   <div className="flex gap-3">
