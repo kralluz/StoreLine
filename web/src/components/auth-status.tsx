@@ -7,6 +7,7 @@ import { Button, TextLink } from "@/components/ui";
 export default function AuthStatus() {
   const router = useRouter();
   const { user, logout } = useAuth();
+  const isAdmin = user?.role === "ADMIN";
 
   const handleLogout = () => {
     logout();
@@ -16,11 +17,25 @@ export default function AuthStatus() {
   if (user) {
     return (
       <div className="flex items-center gap-2">
+        {isAdmin ? (
+          <>
+            <TextLink href="/admin/produtos" variant="chipPrimary">
+              Admin produtos
+            </TextLink>
+            <TextLink href="/admin/compras" variant="chip">
+              Admin compras
+            </TextLink>
+          </>
+        ) : null}
+
+        <TextLink href="/produtos" variant="chip">
+          Produtos
+        </TextLink>
         <TextLink href="/carrinho" variant="chip">
           Carrinho
         </TextLink>
-        <div className="rounded-full border border-zinc-300 px-3 py-1.5 text-sm font-medium">
-          {user.name}
+        <div className="rounded-xl border border-[var(--border-default)] bg-[var(--surface)]/85 px-3 py-1.5 text-sm font-medium text-[var(--foreground)]">
+          {user.name} {isAdmin ? "(ADMIN)" : ""}
         </div>
         <Button type="button" onClick={handleLogout} variant="outline" size="sm">
           Desconectar

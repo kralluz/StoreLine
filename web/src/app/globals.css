@@ -1,14 +1,17 @@
 @import "tailwindcss";
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --background: #f5f4ef;
+  --foreground: #1f2b26;
   --surface: #ffffff;
-  --border-light: #e4e4e7;
-  --border-default: #d4d4d8;
-  --text-muted: #3f3f46;
-  --text-subtle: #52525b;
-  --button-primary: #18181b;
+  --border-light: #e3e7e2;
+  --border-default: #ccd6cf;
+  --text-muted: #43524b;
+  --text-subtle: #65756e;
+  --button-primary: #00674f;
+  --button-primary-hover: #005641;
+  --accent: #00674f;
+  --accent-soft: #e7f2ee;
   --status-error: #dc2626;
 }
 
@@ -21,13 +24,16 @@
   --color-text-muted: var(--text-muted);
   --color-text-subtle: var(--text-subtle);
   --color-button-primary: var(--button-primary);
+  --color-button-primary-hover: var(--button-primary-hover);
+  --color-accent: var(--accent);
+  --color-accent-soft: var(--accent-soft);
   --color-status-error: var(--status-error);
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
 }
 
 @media (prefers-color-scheme: dark) {
-  :root {
+  :root:not([data-theme="light"]) {
     --background: #0a0a0a;
     --foreground: #ededed;
     --surface: #111111;
@@ -40,8 +46,44 @@
   }
 }
 
+:root[data-theme="dark"] {
+  --background: #0f1714;
+  --foreground: #e6eee9;
+  --surface: #16201c;
+  --border-light: #27322e;
+  --border-default: #33423c;
+  --text-muted: #c4d1ca;
+  --text-subtle: #9eb0a7;
+  --button-primary: #1a8a6e;
+  --button-primary-hover: #157159;
+  --accent: #3bc09b;
+  --accent-soft: #103b31;
+  --status-error: #f87171;
+}
+
 body {
   background: var(--background);
   color: var(--foreground);
   font-family: var(--font-sans), Arial, Helvetica, sans-serif;
+  background-image: radial-gradient(circle at top right, rgba(0, 103, 79, 0.06), transparent 45%);
+}
+
+a,
+button,
+input,
+textarea,
+select {
+  transition: background-color 180ms ease, border-color 180ms ease, color 180ms ease,
+    box-shadow 180ms ease, transform 180ms ease;
+}
+
+h1,
+h2,
+h3 {
+  letter-spacing: -0.01em;
+}
+
+::selection {
+  background: color-mix(in srgb, var(--accent) 24%, white);
+  color: var(--foreground);
 }
