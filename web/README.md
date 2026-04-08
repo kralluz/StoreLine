@@ -12,16 +12,16 @@ Aplicacao Next.js com frontend e rotas API do StoreLine.
 1. Copie o arquivo de ambiente:
 
 ```bash
-cp .env.example .env.local
+cp .env.example .env
 ```
 
 No Windows PowerShell:
 
 ```powershell
-Copy-Item .env.example .env.local
+Copy-Item .env.example .env
 ```
 
-2. Ajuste as variaveis em `.env.local`:
+2. Ajuste as variaveis em `.env`:
 
 - `DATABASE_URL`
 - `JWT_SECRET`
