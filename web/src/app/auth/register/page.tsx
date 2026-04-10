@@ -76,7 +76,7 @@ export default function RegisterPage() {
           value={formData.name}
           onChange={handleChange}
           required
-          className="rounded border border-zinc-300 px-3 py-2"
+          className="rounded border border-[var(--border-default)] px-3 py-2"
         />
         <input
           type="email"
@@ -85,7 +85,7 @@ export default function RegisterPage() {
           value={formData.email}
           onChange={handleChange}
           required
-          className="rounded border border-zinc-300 px-3 py-2"
+          className="rounded border border-[var(--border-default)] px-3 py-2"
         />
         <input
           type="password"
@@ -94,7 +94,7 @@ export default function RegisterPage() {
           value={formData.password}
           onChange={handleChange}
           required
-          className="rounded border border-zinc-300 px-3 py-2"
+          className="rounded border border-[var(--border-default)] px-3 py-2"
         />
         <button
           type="submit"
@@ -105,7 +105,7 @@ export default function RegisterPage() {
         </button>
       </form>
 
-      <p className="mt-4 text-sm text-zinc-700">
+      <p className="mt-4 text-sm text-[var(--text-muted)]">
         Ja tem conta? <Link href="/auth/login" className="underline">Faca login</Link>
       </p>
     </div>
