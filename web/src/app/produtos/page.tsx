@@ -19,21 +19,21 @@ export default async function ProdutosPage() {
       </div>
 
       {products.length === 0 ? (
-        <p className="text-zinc-700">Nenhum produto disponivel.</p>
+        <p className="text-[var(--text-muted)]">Nenhum produto disponivel.</p>
       ) : (
         <ul className="flex flex-col gap-3">
           {products.map((p) => (
-            <li key={p.id} className="rounded border border-zinc-200 p-4">
+            <li key={p.id} className="rounded border border-[var(--border-light)] p-4">
               <div className="flex items-start justify-between gap-4">
                 <div className="min-w-0">
                   <h2 className="truncate text-lg font-medium">{p.name}</h2>
                   {p.description && (
-                    <p className="mt-1 line-clamp-2 text-sm text-zinc-700">{p.description}</p>
+                    <p className="mt-1 line-clamp-2 text-sm text-[var(--text-muted)]">{p.description}</p>
                   )}
                 </div>
                 <div className="text-right">
                   <p className="font-medium">R$ {p.price.toString()}</p>
-                  <p className="text-xs text-zinc-600">Estoque: {p.stock}</p>
+                  <p className="text-xs text-[var(--text-subtle)]">Estoque: {p.stock}</p>
                 </div>
               </div>
 
