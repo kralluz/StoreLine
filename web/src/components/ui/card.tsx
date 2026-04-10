@@ -20,8 +20,14 @@ export function Card<T extends ElementType = "section">({
   const Component = as ?? "section";
 
   return (
-    <Component className={cn("rounded border border-zinc-200 p-4", className)} {...props}>
-      {title ? <h2 className="text-lg font-medium">{title}</h2> : null}
+    <Component
+      className={cn(
+        "rounded-2xl border border-[var(--border-default)] bg-[var(--surface)]/92 p-5 shadow-[0_8px_24px_rgba(15,23,20,0.06)] sm:p-6",
+        className,
+      )}
+      {...props}
+    >
+      {title ? <h2 className="text-lg font-semibold text-[var(--foreground)]">{title}</h2> : null}
       <div className={contentClassName}>{children}</div>
     </Component>
   );

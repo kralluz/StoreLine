@@ -144,7 +144,7 @@ export default function MinhasComprasPage() {
         <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
           <div>
             <h2 className={text.sectionTitle}>Finalizar compra</h2>
-            <p className="mt-1 text-sm text-zinc-500">
+            <p className="mt-1 text-sm text-[var(--text-subtle)]">
               Converte os itens do seu carrinho em um pedido.
             </p>
           </div>
@@ -167,7 +167,7 @@ export default function MinhasComprasPage() {
           <div className={feedback.empty}>
             <p className="text-4xl mb-3">🛍️</p>
             <p>Nenhuma compra encontrada.</p>
-            <p className="mt-1 text-zinc-400">Adicione itens ao carrinho e finalize uma compra.</p>
+            <p className="mt-1 text-[var(--text-subtle)]">Adicione itens ao carrinho e finalize uma compra.</p>
           </div>
         ) : (
           <ul className="flex flex-col gap-3">
@@ -191,7 +191,7 @@ export default function MinhasComprasPage() {
 
                   {/* Total + ação */}
                   <div className="flex items-center justify-between gap-4 sm:flex-col sm:items-end">
-                    <p className="text-base font-bold text-zinc-900">
+                    <p className="text-base font-bold text-[var(--foreground)]">
                       R$ {Number(o.total).toFixed(2)}
                     </p>
                     <Link href={`/compras/${o.id}`} className={btn.ghost}>

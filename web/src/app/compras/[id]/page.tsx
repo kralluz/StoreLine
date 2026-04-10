@@ -121,7 +121,7 @@ export default function CompraDetalhePage({ params }: Props) {
           </div>
           <div className="text-right">
             <p className={text.label}>Criado em</p>
-            <p className="text-sm font-medium text-zinc-700">{formatDate(order.createdAt)}</p>
+            <p className="text-sm font-medium text-[var(--text-muted)]">{formatDate(order.createdAt)}</p>
           </div>
         </div>
       </div>
@@ -145,13 +145,13 @@ export default function CompraDetalhePage({ params }: Props) {
                     <th className={table.thRight}>Subtotal</th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-zinc-100 bg-white">
+                <tbody className="divide-y divide-[var(--border-light)] bg-[var(--surface)]">
                   {order.items.map((item) => (
                     <tr key={item.id} className={table.tr}>
                       <td className={table.tdStrong}>{item.productName}</td>
                       <td className={table.tdRight}>{item.quantity}</td>
                       <td className={table.tdRight}>R$ {Number(item.unitPrice).toFixed(2)}</td>
-                      <td className={`${table.tdRight} font-medium text-zinc-900`}>
+                      <td className={`${table.tdRight} font-medium text-[var(--foreground)]`}>
                         R$ {Number(item.lineSubtotal).toFixed(2)}
                       </td>
                     </tr>
@@ -166,12 +166,12 @@ export default function CompraDetalhePage({ params }: Props) {
                 <li key={item.id} className={card.item}>
                   <div className="flex items-start justify-between gap-2">
                     <div className="min-w-0">
-                      <p className="truncate font-medium text-zinc-900">{item.productName}</p>
+                      <p className="truncate font-medium text-[var(--foreground)]">{item.productName}</p>
                       <p className={text.label}>
                         {item.quantity} × R$ {Number(item.unitPrice).toFixed(2)}
                       </p>
                     </div>
-                    <p className="shrink-0 font-semibold text-zinc-900">
+                    <p className="shrink-0 font-semibold text-[var(--foreground)]">
                       R$ {Number(item.lineSubtotal).toFixed(2)}
                     </p>
                   </div>
@@ -188,7 +188,7 @@ export default function CompraDetalhePage({ params }: Props) {
         <div className="flex flex-col gap-2">
           <div className="flex items-center justify-between">
             <span className={text.label}>Subtotal</span>
-            <span className="text-sm font-medium text-zinc-700">
+            <span className="text-sm font-medium text-[var(--text-muted)]">
               R$ {Number(order.subtotal).toFixed(2)}
             </span>
           </div>
@@ -200,9 +200,9 @@ export default function CompraDetalhePage({ params }: Props) {
               </span>
             </div>
           )}
-          <div className="mt-2 flex items-center justify-between border-t border-zinc-100 pt-3">
-            <span className="font-semibold text-zinc-900">Total</span>
-            <span className="text-xl font-bold text-zinc-900">
+          <div className="mt-2 flex items-center justify-between border-t border-[var(--border-light)] pt-3">
+            <span className="font-semibold text-[var(--foreground)]">Total</span>
+            <span className="text-xl font-bold text-[var(--foreground)]">
               R$ {Number(order.total).toFixed(2)}
             </span>
           </div>

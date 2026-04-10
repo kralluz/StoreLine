@@ -21,21 +21,21 @@ export const page = {
 // Seções / Cards
 // ---------------------------------------------------------------------------
 export const card = {
-  base: "rounded-xl border border-zinc-200 bg-white p-4 shadow-sm sm:p-6",
+  base: "rounded-xl border border-[var(--border-light)] bg-[var(--surface)] p-4 shadow-sm sm:p-6",
   /** Item de lista dentro de um card */
-  item: "rounded-lg border border-zinc-100 bg-zinc-50 p-3 sm:p-4",
+  item: "rounded-lg border border-[var(--border-light)] bg-[var(--surface)] p-3 sm:p-4",
 } as const;
 
 // ---------------------------------------------------------------------------
 // Tipografia
 // ---------------------------------------------------------------------------
 export const text = {
-  pageTitle: "text-2xl font-bold tracking-tight text-zinc-900 sm:text-3xl",
-  sectionTitle: "text-base font-semibold text-zinc-900 sm:text-lg",
-  label: "text-sm text-zinc-500",
-  muted: "text-xs text-zinc-400",
-  strong: "font-semibold text-zinc-900",
-  mono: "font-mono text-xs text-zinc-500",
+  pageTitle: "text-2xl font-bold tracking-tight text-[var(--foreground)] sm:text-3xl",
+  sectionTitle: "text-base font-semibold text-[var(--foreground)] sm:text-lg",
+  label: "text-sm text-[var(--text-subtle)]",
+  muted: "text-xs text-[var(--text-subtle)]",
+  strong: "font-semibold text-[var(--foreground)]",
+  mono: "font-mono text-xs text-[var(--text-subtle)]",
 } as const;
 
 // ---------------------------------------------------------------------------
@@ -49,8 +49,8 @@ export const btn = {
   danger:
     "inline-flex items-center justify-center rounded-lg bg-red-600 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50",
   ghost:
-    "inline-flex items-center rounded-md px-3 py-1.5 text-sm font-medium text-zinc-600 transition-colors hover:bg-zinc-100 hover:text-zinc-900 focus:outline-none",
-  link: "text-sm font-medium text-zinc-600 underline-offset-2 transition-colors hover:text-zinc-900 hover:underline",
+    "inline-flex items-center rounded-md px-3 py-1.5 text-sm font-medium text-[var(--text-subtle)] transition-colors hover:bg-[color-mix(in_srgb,var(--surface)_92%,black_8%)] hover:text-[var(--foreground)] focus:outline-none",
+  link: "text-sm font-medium text-[var(--text-subtle)] underline-offset-2 transition-colors hover:text-[var(--foreground)] hover:underline",
   dangerGhost:
     "inline-flex items-center rounded-md px-3 py-1.5 text-sm font-medium text-red-600 transition-colors hover:bg-red-50 hover:text-red-700 focus:outline-none",
 } as const;
@@ -59,9 +59,9 @@ export const btn = {
 // Inputs
 // ---------------------------------------------------------------------------
 export const input = {
-  base: "w-full rounded-lg border border-zinc-300 px-3 py-2 text-sm placeholder-zinc-400 transition focus:border-transparent focus:outline-none focus:ring-2 focus:ring-zinc-900",
+  base: "w-full rounded-lg border border-[var(--border-default)] px-3 py-2 text-sm placeholder-zinc-400 transition focus:border-transparent focus:outline-none focus:ring-2 focus:ring-zinc-900",
   textarea:
-    "w-full resize-none rounded-lg border border-zinc-300 px-3 py-2 text-sm placeholder-zinc-400 transition focus:border-transparent focus:outline-none focus:ring-2 focus:ring-zinc-900",
+    "w-full resize-none rounded-lg border border-[var(--border-default)] px-3 py-2 text-sm placeholder-zinc-400 transition focus:border-transparent focus:outline-none focus:ring-2 focus:ring-zinc-900",
 } as const;
 
 // ---------------------------------------------------------------------------
@@ -70,24 +70,24 @@ export const input = {
 export const feedback = {
   error:
     "rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700",
-  empty: "py-10 text-center text-sm text-zinc-400",
-  loading: "py-10 text-center text-sm text-zinc-400",
+  empty: "py-10 text-center text-sm text-[var(--text-subtle)]",
+  loading: "py-10 text-center text-sm text-[var(--text-subtle)]",
 } as const;
 
 // ---------------------------------------------------------------------------
 // Tabela responsiva
 // ---------------------------------------------------------------------------
 export const table = {
-  wrapper: "overflow-x-auto rounded-lg border border-zinc-200",
-  base: "min-w-full divide-y divide-zinc-200 text-sm",
-  thead: "bg-zinc-50",
-  th: "px-4 py-3 text-left text-xs font-semibold uppercase tracking-wide text-zinc-500",
-  thRight: "px-4 py-3 text-right text-xs font-semibold uppercase tracking-wide text-zinc-500",
-  td: "px-4 py-3 text-zinc-700",
-  tdRight: "px-4 py-3 text-right text-zinc-700",
-  tdStrong: "px-4 py-3 font-medium text-zinc-900",
-  tr: "border-t border-zinc-100 transition-colors hover:bg-zinc-50",
-  tfoot: "border-t-2 border-zinc-200 bg-zinc-50",
+  wrapper: "overflow-x-auto rounded-lg border border-[var(--border-light)]",
+  base: "min-w-full divide-y divide-[var(--border-light)] text-sm",
+  thead: "bg-[var(--surface)]",
+  th: "px-4 py-3 text-left text-xs font-semibold uppercase tracking-wide text-[var(--text-subtle)]",
+  thRight: "px-4 py-3 text-right text-xs font-semibold uppercase tracking-wide text-[var(--text-subtle)]",
+  td: "px-4 py-3 text-[var(--text-muted)]",
+  tdRight: "px-4 py-3 text-right text-[var(--text-muted)]",
+  tdStrong: "px-4 py-3 font-medium text-[var(--foreground)]",
+  tr: "border-t border-[var(--border-light)] transition-colors hover:bg-[var(--surface)]",
+  tfoot: "border-t-2 border-[var(--border-light)] bg-[var(--surface)]",
 } as const;
 
 // ---------------------------------------------------------------------------

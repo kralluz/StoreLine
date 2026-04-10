@@ -20,7 +20,7 @@ export function PageContainer({ maxWidth = "3xl", className, children }: Props) 
   return (
     <div
       className={cn(
-        "mx-auto flex min-h-screen w-full flex-col gap-6 p-8",
+        "mx-auto flex min-h-screen w-full flex-col gap-7 px-5 py-8 sm:px-8 sm:py-10",
         widthClasses[maxWidth],
         className,
       )}

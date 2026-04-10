@@ -116,7 +116,7 @@ export default function AdminComprasPage() {
       <div className="grid grid-cols-2 gap-3 sm:grid-cols-3">
         <div className={`${card.base} flex flex-col gap-1`}>
           <span className={text.label}>Total de pedidos</span>
-          <span className="text-2xl font-bold text-zinc-900">{orders.length}</span>
+          <span className="text-2xl font-bold text-[var(--foreground)]">{orders.length}</span>
         </div>
         <div className={`${card.base} flex flex-col gap-1`}>
           <span className={text.label}>Pendentes</span>
@@ -136,7 +136,7 @@ export default function AdminComprasPage() {
       <div className={card.base}>
         <h2 className={`${text.sectionTitle} mb-4`}>
           Histórico global{" "}
-          <span className="ml-1 rounded-full bg-zinc-100 px-2 py-0.5 text-xs font-medium text-zinc-600">
+          <span className="ml-1 rounded-full bg-[color-mix(in_srgb,var(--surface)_92%,black_8%)] px-2 py-0.5 text-xs font-medium text-[var(--text-subtle)]">
             {orders.length}
           </span>
         </h2>
@@ -162,32 +162,32 @@ export default function AdminComprasPage() {
                     <th className={table.th}></th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-zinc-100 bg-white">
+                <tbody className="divide-y divide-[var(--border-light)] bg-[var(--surface)]">
                   {orders.map((o) => (
                     <tr key={o.id} className={table.tr}>
                       <td className={table.td}>
-                        <span className="font-mono text-xs text-zinc-500">
+                        <span className="font-mono text-xs text-[var(--text-subtle)]">
                           #{o.id.slice(0, 8)}…
                         </span>
                       </td>
                       <td className={table.td}>
                         {o.user ? (
                           <div className="flex flex-col">
-                            <span className="font-medium text-zinc-900">{o.user.name}</span>
-                            <span className="text-xs text-zinc-400">{o.user.email}</span>
+                            <span className="font-medium text-[var(--foreground)]">{o.user.name}</span>
+                            <span className="text-xs text-[var(--text-subtle)]">{o.user.email}</span>
                           </div>
                         ) : (
-                          <span className="text-zinc-400">—</span>
+                          <span className="text-[var(--text-subtle)]">—</span>
                         )}
                       </td>
                       <td className={table.td}>
                         <StatusBadge status={o.status} />
                       </td>
                       <td className={table.tdRight}>{o.itemCount}</td>
-                      <td className={`${table.tdRight} font-semibold text-zinc-900`}>
+                      <td className={`${table.tdRight} font-semibold text-[var(--foreground)]`}>
                         R$ {Number(o.total).toFixed(2)}
                       </td>
-                      <td className={`${table.td} whitespace-nowrap text-xs text-zinc-500`}>
+                      <td className={`${table.td} whitespace-nowrap text-xs text-[var(--text-subtle)]`}>
                         {formatDate(o.createdAt)}
                       </td>
                       <td className={table.td}>
@@ -208,14 +208,14 @@ export default function AdminComprasPage() {
                   <div className="flex flex-col gap-2">
                     <div className="flex items-start justify-between gap-2">
                       <div className="flex flex-col gap-1 min-w-0">
-                        <span className="font-mono text-xs text-zinc-400">
+                        <span className="font-mono text-xs text-[var(--text-subtle)]">
                           #{o.id.slice(0, 8)}…
                         </span>
                         {o.user && (
-                          <span className="truncate font-medium text-zinc-900">{o.user.name}</span>
+                          <span className="truncate font-medium text-[var(--foreground)]">{o.user.name}</span>
                         )}
                         {o.user && (
-                          <span className="truncate text-xs text-zinc-400">{o.user.email}</span>
+                          <span className="truncate text-xs text-[var(--text-subtle)]">{o.user.email}</span>
                         )}
                       </div>
                       <StatusBadge status={o.status} />
@@ -225,7 +225,7 @@ export default function AdminComprasPage() {
                         {o.itemCount} {o.itemCount === 1 ? "item" : "itens"} •{" "}
                         {formatDate(o.createdAt)}
                       </span>
-                      <span className="font-bold text-zinc-900">
+                      <span className="font-bold text-[var(--foreground)]">
                         R$ {Number(o.total).toFixed(2)}
                       </span>
                     </div>

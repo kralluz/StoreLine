@@ -3,6 +3,7 @@ import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import AuthStatus from "@/components/auth-status";
 import { AuthProvider } from "@/components/auth-context";
+import ThemeToggle from "@/components/theme-toggle";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -31,8 +32,9 @@ export default function RootLayout({
     >
       <body className="min-h-full flex flex-col">
         <AuthProvider>
-          <header className="w-full border-b border-zinc-200 px-4 py-3">
-            <div className="mx-auto flex w-full max-w-6xl justify-end">
+          <header className="w-full border-b border-[var(--border-light)] px-4 py-3">
+            <div className="mx-auto flex w-full max-w-6xl items-center justify-end gap-2">
+              <ThemeToggle />
               <AuthStatus />
             </div>
           </header>
