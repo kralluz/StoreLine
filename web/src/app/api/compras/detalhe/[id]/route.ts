@@ -39,7 +39,7 @@ export async function GET(request: NextRequest, { params }: Params) {
           createdAt: order.createdAt,
           updatedAt: order.updatedAt,
           user: isAdmin ? order.user : undefined,
-          items: order.items.map((i: any) => ({
+          items: order.items.map((i) => ({
             id: i.id,
             productId: i.productId,
             productName: i.productName,

@@ -1,6 +1,12 @@
 "use client";
 
-import { createContext, useCallback, useContext, useEffect, useMemo, useState } from "react";
+import {
+  createContext,
+  useCallback,
+  useContext,
+  useMemo,
+  useSyncExternalStore,
+} from "react";
 
 type AuthUser = {
   id: string;
@@ -37,41 +43,60 @@ function readStoredUser(): AuthUser | null {
   }
 }
 
+const listeners = new Set<() => void>();
+
+function notify() {
+  listeners.forEach((listener) => listener());
+}
+
+function subscribe(callback: () => void) {
+  listeners.add(callback);
+  const onExternalChange = () => callback();
+  window.addEventListener("storage", onExternalChange);
+  window.addEventListener("focus", onExternalChange);
+  return () => {
+    listeners.delete(callback);
+    window.removeEventListener("storage", onExternalChange);
+    window.removeEventListener("focus", onExternalChange);
+  };
+}
+
+let cachedRaw: string | null | undefined = undefined;
+let cachedUser: AuthUser | null = null;
+
+function getSnapshot(): AuthUser | null {
+  const raw = localStorage.getItem("user");
+  if (raw === cachedRaw) return cachedUser;
+  cachedRaw = raw;
+  cachedUser = readStoredUser();
+  return cachedUser;
+}
+
+function getServerSnapshot(): AuthUser | null {
+  return null;
+}
+
 export function AuthProvider({ children }: { children: React.ReactNode }) {
-  const [user, setUser] = useState<AuthUser | null>(null);
-
-  const syncFromStorage = useCallback(() => {
-    setUser(readStoredUser());
-  }, []);
-
-  useEffect(() => {
-    syncFromStorage();
-
-    const onStorageOrFocus = () => syncFromStorage();
-    window.addEventListener("storage", onStorageOrFocus);
-    window.addEventListener("focus", onStorageOrFocus);
-
-    return () => {
-      window.removeEventListener("storage", onStorageOrFocus);
-      window.removeEventListener("focus", onStorageOrFocus);
-    };
-  }, [syncFromStorage]);
+  const user = useSyncExternalStore(subscribe, getSnapshot, getServerSnapshot);
 
   const login = useCallback((token: string, nextUser: AuthUser) => {
     localStorage.setItem("authToken", token);
-    localStorage.setItem("user", JSON.stringify(nextUser));
-    setUser({
-      id: nextUser.id,
-      name: nextUser.name?.trim() || "Usuario",
-      email: nextUser.email,
-      role: nextUser.role || "USER",
-    });
+    localStorage.setItem(
+      "user",
+      JSON.stringify({
+        id: nextUser.id,
+        name: nextUser.name?.trim() || "Usuario",
+        email: nextUser.email,
+        role: nextUser.role || "USER",
+      })
+    );
+    notify();
   }, []);
 
   const logout = useCallback(() => {
     localStorage.removeItem("authToken");
     localStorage.removeItem("user");
-    setUser(null);
+    notify();
   }, []);
 
   const value = useMemo<AuthContextValue>(

@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
+import { Prisma } from "@prisma/client";
 import { prisma } from "@/lib/prisma";
 import { getRequestUser, jsonUnauthorized } from "@/lib/request-auth";
 
@@ -44,7 +45,7 @@ export async function GET(request: NextRequest, { params }: Params) {
 
     return NextResponse.json(
       {
-        orders: orders.map((o: any) => ({
+        orders: orders.map((o) => ({
           id: o.id,
           status: o.status,
           subtotal: o.subtotal.toString(),
@@ -131,7 +132,7 @@ export async function POST(request: NextRequest, { params }: Params) {
 
     const subtotal = subtotalNumber.toFixed(2);
 
-    const result = await prisma.$transaction(async (tx: any) => {
+    const result = await prisma.$transaction(async (tx: Prisma.TransactionClient) => {
       for (const item of typedCart.items) {
         const updated = await tx.product.updateMany({
           where: {
