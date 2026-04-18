@@ -14,6 +14,7 @@ export const LoginSchema = z.object({
 export const ProductCreateSchema = z.object({
   name: z.string().min(2, "Nome obrigatorio"),
   description: z.string().max(2000, "Descricao muito longa").optional().nullable(),
+  imageUrl: z.string().trim().max(2048, "URL da imagem muito longa").optional().nullable(),
   price: z.coerce.number().min(0, "Preco invalido"),
   stock: z.coerce.number().int().min(0, "Estoque invalido").optional().default(0),
   isActive: z.coerce.boolean().optional().default(true),
@@ -22,6 +23,7 @@ export const ProductCreateSchema = z.object({
 export const ProductUpdateSchema = z.object({
   name: z.string().min(2, "Nome obrigatorio").optional(),
   description: z.string().max(2000, "Descricao muito longa").nullable().optional(),
+  imageUrl: z.string().trim().max(2048, "URL da imagem muito longa").nullable().optional(),
   price: z.coerce.number().min(0, "Preco invalido").optional(),
   stock: z.coerce.number().int().min(0, "Estoque invalido").optional(),
   isActive: z.coerce.boolean().optional(),

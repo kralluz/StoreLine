@@ -10,7 +10,7 @@ async function getCartItemForUser(itemId: string, userId: string) {
       cart: { userId },
     },
     include: {
-      product: { select: { id: true, name: true, price: true, stock: true } },
+      product: { select: { id: true, name: true, imageUrl: true, price: true, stock: true } },
     },
   });
 }
@@ -58,7 +58,7 @@ export async function PUT(
     const updated = await prisma.cartItem.update({
       where: { id: itemId },
       data: { quantity },
-      include: { product: { select: { id: true, name: true, price: true, stock: true } } },
+      include: { product: { select: { id: true, name: true, imageUrl: true, price: true, stock: true } } },
     });
 
     return NextResponse.json({

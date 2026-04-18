@@ -23,6 +23,7 @@ export async function GET(request: NextRequest) {
               select: {
                 id: true,
                 name: true,
+                imageUrl: true,
                 price: true,
                 stock: true,
                 isActive: true,

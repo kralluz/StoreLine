@@ -41,12 +41,13 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const { name, description, price, stock, isActive } = validation.data;
+    const { name, description, imageUrl, price, stock, isActive } = validation.data;
 
     const product = await prisma.product.create({
       data: {
         name,
         description,
+        imageUrl,
         price: new Prisma.Decimal(price),
         stock,
         isActive,
