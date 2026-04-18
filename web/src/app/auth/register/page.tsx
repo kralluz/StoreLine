@@ -4,11 +4,9 @@ import type { ChangeEvent, FormEvent } from "react";
 import { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useAuth } from "@/components/auth-context";
 
 export default function RegisterPage() {
   const router = useRouter();
-  const { login } = useAuth();
   const [formData, setFormData] = useState({
     name: "",
     email: "",
@@ -47,14 +45,7 @@ export default function RegisterPage() {
         return;
       }
 
-      if (!data?.token || !data?.user) {
-        setError("Resposta invalida do servidor");
-        return;
-      }
-
-      login(data.token, data.user);
-
-      router.push("/");
+      router.push("/auth/login?registered=1");
     } catch (err) {
       setError("Erro de conexao");
       console.error(err);
