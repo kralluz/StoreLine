@@ -1,7 +1,7 @@
 "use client";
 
-import { useEffect, useState } from "react";
 import Link from "next/link";
+import { useEffect, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 import { StatusBadge } from "@/components/status-badge";
 import { page, card, text, btn, feedback, type OrderStatus } from "@/lib/ui";
@@ -42,10 +42,16 @@ function formatDate(iso: string) {
   });
 }
 
+function formatCurrency(value: string) {
+  return new Intl.NumberFormat("pt-BR", {
+    style: "currency",
+    currency: "BRL",
+  }).format(Number(value));
+}
+
 export default function MinhasComprasPage() {
   const router = useRouter();
   const [loading, setLoading] = useState(true);
-  const [finalizing, setFinalizing] = useState(false);
   const [error, setError] = useState("");
   const [orders, setOrders] = useState<OrderSummary[]>([]);
 
@@ -53,159 +59,121 @@ export default function MinhasComprasPage() {
     setError("");
     const token = getAuthToken();
     if (!token) throw new Error("Token ausente");
+
     const userId = getLocalUserId();
     if (!userId) throw new Error("Usuario ausente");
 
     const response = await fetch(`/api/compras/${userId}`, {
       headers: { authorization: `Bearer ${token}` },
     });
+
     const data = (await response.json()) as { orders?: OrderSummary[]; error?: string };
     if (!response.ok) throw new Error(data.error || "Erro ao carregar compras");
+
     setOrders(data.orders ?? []);
-  }
-
-  async function finalizePurchase() {
-    setFinalizing(true);
-    setError("");
-    try {
-      const token = getAuthToken();
-      if (!token) throw new Error("Token ausente");
-      const userId = getLocalUserId();
-      if (!userId) throw new Error("Usuario ausente");
-
-      const response = await fetch(`/api/compras/${userId}`, {
-        method: "POST",
-        headers: { authorization: `Bearer ${token}` },
-      });
-      const data = (await response.json()) as { error?: string; order?: { id: string } };
-      if (!response.ok) throw new Error(data.error || "Erro ao finalizar compra");
-      if (data.order?.id) {
-        router.push(`/compras/${data.order.id}`);
-        return;
-      }
-      await loadOrders();
-    } catch (e: unknown) {
-      setError(e instanceof Error ? e.message : "Erro ao finalizar compra");
-    } finally {
-      setFinalizing(false);
-    }
   }
 
   useEffect(() => {
     const token = getAuthToken();
     const userId = getLocalUserId();
+
     if (!token || !userId) {
       router.replace("/auth/login");
       return;
     }
+
     loadOrders()
-      .catch((e: unknown) => setError(e instanceof Error ? e.message : "Erro ao carregar compras"))
+      .catch((e: unknown) => {
+        setError(e instanceof Error ? e.message : "Erro ao carregar compras");
+      })
       .finally(() => setLoading(false));
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  // ── Loading ──────────────────────────────────────────────────────────────
+  const finalizedOrders = useMemo(() => {
+    return orders.filter((order) => order.status === "CONFIRMED");
+  }, [orders]);
+
+  const confirmedTotal = useMemo(() => {
+    return finalizedOrders.reduce((acc, order) => acc + Number(order.total), 0);
+  }, [finalizedOrders]);
+
   if (loading) {
     return (
       <div className={`${page.narrow} flex flex-col gap-6`}>
         <h1 className={text.pageTitle}>Minhas compras</h1>
-        <p className={feedback.loading}>Carregando...</p>
+        <p className={feedback.loading}>Carregando histórico...</p>
       </div>
     );
   }
 
-  // ── Conteúdo principal ───────────────────────────────────────────────────
   return (
     <div className={`${page.narrow} flex flex-col gap-6`}>
-
-      {/* Cabeçalho */}
-      <div className={page.header}>
-        <h1 className={text.pageTitle}>Minhas compras</h1>
-        <div className="flex items-center gap-2">
-          <button
-            type="button"
-            onClick={() => loadOrders().catch((e) => setError(e instanceof Error ? e.message : "Erro"))}
-            className={btn.ghost}
-            disabled={finalizing}
-          >
-            Atualizar
-          </button>
-          <Link href="/" className={btn.ghost}>
-            Home
-          </Link>
-        </div>
-      </div>
-
-      {/* Erro */}
-      {error && <p className={feedback.error}>{error}</p>}
-
-      {/* Finalizar compra */}
-      <div className={card.base}>
-        <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+      <div className={`${card.base} bg-[var(--surface)]/94`}>
+        <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
           <div>
-            <h2 className={text.sectionTitle}>Finalizar compra</h2>
+            <h1 className={text.pageTitle}>Minhas compras</h1>
             <p className="mt-1 text-sm text-[var(--text-subtle)]">
-              Converte os itens do seu carrinho em um pedido.
+              Histórico de pedidos finalizados na sua conta.
             </p>
           </div>
-          <button
-            type="button"
-            onClick={finalizePurchase}
-            className={btn.success}
-            disabled={finalizing}
-          >
-            {finalizing ? "Finalizando..." : "Finalizar compra"}
-          </button>
+          <div className="grid grid-cols-2 gap-2 text-sm sm:min-w-[15rem]">
+            <div className="rounded-lg border border-[var(--border-light)] bg-[var(--surface)] px-3 py-2">
+              <p className="text-[var(--text-subtle)]">Pedidos</p>
+              <p className="mt-0.5 font-semibold text-[var(--foreground)]">{finalizedOrders.length}</p>
+            </div>
+            <div className="rounded-lg border border-[var(--border-light)] bg-[var(--surface)] px-3 py-2">
+              <p className="text-[var(--text-subtle)]">Total gasto</p>
+              <p className="mt-0.5 font-semibold text-[var(--foreground)]">{formatCurrency(String(confirmedTotal))}</p>
+            </div>
+          </div>
         </div>
       </div>
 
-      {/* Histórico */}
-      <div className={card.base}>
-        <h2 className={`${text.sectionTitle} mb-4`}>Histórico de pedidos</h2>
+      {error ? <p className={feedback.error}>{error}</p> : null}
 
-        {orders.length === 0 ? (
+      <div className={card.base}>
+        <h2 className={`${text.sectionTitle} mb-4`}>Pedidos finalizados</h2>
+
+        {finalizedOrders.length === 0 ? (
           <div className={feedback.empty}>
-            <p className="text-4xl mb-3">🛍️</p>
-            <p>Nenhuma compra encontrada.</p>
-            <p className="mt-1 text-[var(--text-subtle)]">Adicione itens ao carrinho e finalize uma compra.</p>
+            <p>Nenhuma compra finalizada até o momento.</p>
+            <p className="mt-1 text-[var(--text-subtle)]">Quando você concluir pedidos, eles aparecerão aqui.</p>
+            <div className="mt-4">
+              <Link href="/produtos" className={btn.ghost}>
+                Ver produtos
+              </Link>
+            </div>
           </div>
         ) : (
           <ul className="flex flex-col gap-3">
-            {orders.map((o) => (
-              <li key={o.id} className={card.item}>
-                <div className="flex flex-col gap-2 sm:flex-row sm:items-start sm:justify-between">
-
-                  {/* Info do pedido */}
-                  <div className="flex flex-col gap-1 min-w-0">
+            {finalizedOrders.map((order) => (
+              <li key={order.id} className={`${card.item} p-4`}>
+                <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
+                  <div className="min-w-0 space-y-1">
                     <div className="flex flex-wrap items-center gap-2">
-                      <span className={`${text.strong} truncate`}>
-                        Pedido #{o.id.slice(0, 8)}…
+                      <span className="truncate text-sm font-semibold text-[var(--foreground)] sm:text-base">
+                        Pedido #{order.id.slice(0, 10)}
                       </span>
-                      <StatusBadge status={o.status} />
+                      <StatusBadge status={order.status} />
                     </div>
-                    <p className={text.label}>
-                      {o.itemCount} {o.itemCount === 1 ? "item" : "itens"} •{" "}
-                      {formatDate(o.createdAt)}
+                    <p className="text-sm text-[var(--text-subtle)]">
+                      {order.itemCount} {order.itemCount === 1 ? "item" : "itens"} • {formatDate(order.createdAt)}
                     </p>
                   </div>
 
-                  {/* Total + ação */}
-                  <div className="flex items-center justify-between gap-4 sm:flex-col sm:items-end">
-                    <p className="text-base font-bold text-[var(--foreground)]">
-                      R$ {Number(o.total).toFixed(2)}
-                    </p>
-                    <Link href={`/compras/${o.id}`} className={btn.ghost}>
-                      Ver detalhes →
+                  <div className="flex items-center gap-4 sm:flex-col sm:items-end">
+                    <p className="text-base font-semibold text-[var(--foreground)]">{formatCurrency(order.total)}</p>
+                    <Link href={`/compras/${order.id}`} className={btn.ghost}>
+                      Ver detalhes
                     </Link>
                   </div>
-
                 </div>
               </li>
             ))}
           </ul>
         )}
       </div>
-
     </div>
   );
 }
