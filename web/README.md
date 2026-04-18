@@ -39,6 +39,14 @@ npx prisma migrate dev
 npm run prisma:generate
 ```
 
+Se quiser popular os dados de demonstração localmente, rode:
+
+```bash
+npm run db:seed
+```
+
+No Docker, o container web executa migration e seed automaticamente na subida.
+
 5. Inicie o projeto:
 
 ```bash

@@ -15,6 +15,7 @@ type Product = {
   id: string;
   name: string;
   description: string | null;
+  imageUrl: string | null;
   price: string;
   stock: number;
   isActive: boolean;
@@ -25,6 +26,7 @@ type Product = {
 type ProductFormState = {
   name: string;
   description: string;
+  imageUrl: string;
   price: string;
   stock: string;
   isActive: boolean;
@@ -33,6 +35,7 @@ type ProductFormState = {
 const emptyForm: ProductFormState = {
   name: "",
   description: "",
+  imageUrl: "",
   price: "0",
   stock: "0",
   isActive: true,
@@ -114,6 +117,7 @@ export default function AdminProdutosPage() {
     setForm({
       name: p.name,
       description: p.description ?? "",
+      imageUrl: p.imageUrl ?? "",
       price: p.price,
       stock: String(p.stock),
       isActive: p.isActive,
@@ -133,6 +137,7 @@ export default function AdminProdutosPage() {
       const payload = {
         name: form.name,
         description: form.description.trim() === "" ? null : form.description,
+        imageUrl: form.imageUrl.trim() === "" ? null : form.imageUrl.trim(),
         price: form.price,
         stock: form.stock,
         isActive: form.isActive,
@@ -243,6 +248,13 @@ export default function AdminProdutosPage() {
             className="min-h-[88px] rounded border border-[var(--border-default)] px-3 py-2"
           />
 
+          <input
+            value={form.imageUrl}
+            onChange={(e) => setForm((s) => ({ ...s, imageUrl: e.target.value }))}
+            placeholder="URL da imagem (opcional)"
+            className="rounded border border-[var(--border-default)] px-3 py-2"
+          />
+
           <div className="grid grid-cols-2 gap-3">
             <input
               type="number"
@@ -294,12 +306,23 @@ export default function AdminProdutosPage() {
             {products.map((p) => (
               <Card key={p.id} as="li" className="p-3" contentClassName="">
                 <div className="flex items-start justify-between gap-4">
-                  <div className="min-w-0">
+                  <div className="flex min-w-0 items-start gap-3">
+                    <div className="h-14 w-14 shrink-0 overflow-hidden rounded-md border border-[var(--border-light)] bg-[var(--accent-soft)]">
+                      <img
+                        src={p.imageUrl || `https://picsum.photos/seed/storeline-admin-${p.id}/112/112`}
+                        alt={p.name}
+                        loading="lazy"
+                        className="h-full w-full object-cover"
+                      />
+                    </div>
+
+                    <div className="min-w-0">
                     <p className="truncate font-medium">
                       {p.name}{" "}
                       {!p.isActive && <span className="text-xs text-[var(--text-subtle)]">(inativo)</span>}
                     </p>
                     <p className="text-sm text-[var(--text-muted)]">R$ {p.price} • Estoque: {p.stock}</p>
+                    </div>
                   </div>
 
                   <div className="flex gap-3">

@@ -53,6 +53,7 @@ export async function PUT(request: NextRequest, { params }: Params) {
       data: {
         ...(data.name !== undefined ? { name: data.name } : {}),
         ...(data.description !== undefined ? { description: data.description } : {}),
+        ...(data.imageUrl !== undefined ? { imageUrl: data.imageUrl } : {}),
         ...(data.price !== undefined ? { price: new Prisma.Decimal(data.price) } : {}),
         ...(data.stock !== undefined ? { stock: data.stock } : {}),
         ...(data.isActive !== undefined ? { isActive: data.isActive } : {}),

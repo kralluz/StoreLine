@@ -1,17 +1,49 @@
-"use client";
+import StorefrontHome, { type StorefrontProduct } from "@/components/storefront-home";
+import { prisma } from "@/lib/prisma";
 
-import Link from "next/link";
+export const dynamic = "force-dynamic";
 
-export default function Home() {
+function serializeProduct(product: {
+  id: string;
+  name: string;
+  description: string | null;
+  imageUrl: string | null;
+  price: { toString(): string };
+  stock: number;
+  createdAt: Date;
+}): StorefrontProduct {
+  return {
+    id: product.id,
+    name: product.name,
+    description: product.description,
+    imageUrl: product.imageUrl,
+    price: product.price.toString(),
+    stock: product.stock,
+    createdAt: product.createdAt.toISOString(),
+  };
+}
+
+export default async function Home() {
+  const dbProducts = await prisma.product.findMany({
+    where: { isActive: true },
+    orderBy: [{ createdAt: "desc" }],
+    take: 30,
+  });
+
+  const products = dbProducts.map(serializeProduct);
+
+  const bestSellers = [...products].sort((a, b) => b.stock - a.stock).slice(0, 10);
+  const launches = [...products]
+    .sort((a, b) => Number(new Date(b.createdAt)) - Number(new Date(a.createdAt)))
+    .slice(0, 10);
+  const promotions = [...products].sort((a, b) => Number(a.price) - Number(b.price)).slice(0, 10);
+
   return (
-    <div className="mx-auto flex min-h-screen w-full max-w-3xl flex-col justify-center gap-6 p-8">
-      <h1 className="text-3xl font-semibold">StoreLine</h1>
-      <p className="text-[var(--text-muted)]">API e frontend unificados em web/src.</p>
-      <div className="flex gap-3">
-        <Link href="/produtos" className="rounded border border-[var(--border-default)] px-4 py-2">
-          Ver produtos
-        </Link>
-      </div>
-    </div>
+    <StorefrontHome
+      productsCount={products.length}
+      bestSellers={bestSellers}
+      launches={launches}
+      promotions={promotions}
+    />
   );
 }

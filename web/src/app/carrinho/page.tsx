@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState, type FormEvent } from "react";
+import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import {
   Alert,
@@ -18,6 +18,7 @@ type CartItem = {
   product: {
     id: string;
     name: string;
+    imageUrl: string | null;
     price: string;
     stock: number;
     isActive: boolean;
@@ -37,8 +38,18 @@ type CartLineItemProps = {
   isRemoving: boolean;
   onUpdate: (itemId: string, quantity: number) => Promise<void>;
   onRemove: (itemId: string) => Promise<void>;
-  onValidationError: (message: string) => void;
 };
+
+function imageForProduct(id: string, imageUrl?: string | null) {
+  return imageUrl || `https://picsum.photos/seed/storeline-cart-${id}/320/240`;
+}
+
+function formatCurrency(value: string | number) {
+  return new Intl.NumberFormat("pt-BR", {
+    style: "currency",
+    currency: "BRL",
+  }).format(Number(value));
+}
 
 function CartLineItem({
   item,
@@ -46,25 +57,30 @@ function CartLineItem({
   isRemoving,
   onUpdate,
   onRemove,
-  onValidationError,
 }: CartLineItemProps) {
-  const [quantityText, setQuantityText] = useState(String(item.quantity));
-
-  const quantityValue = Number(quantityText);
-  const isQuantityValid = Number.isInteger(quantityValue) && quantityValue >= 1;
-
   return (
-    <Card as="li" className="p-3" contentClassName="">
-      <div className="flex flex-col gap-3 md:flex-row md:items-start md:justify-between">
-        <div className="min-w-0">
-          <p className="truncate font-medium">{item.product.name}</p>
-          <p className="text-sm text-[var(--text-muted)]">
-            R$ {item.product.price} • Estoque: {item.product.stock}
-          </p>
-          <p className="mt-1 text-xs text-[var(--text-subtle)]">Item ID: {item.id}</p>
+    <Card as="li" className="p-4" contentClassName="">
+      <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
+        <div className="flex min-w-0 gap-3">
+          <div className="h-20 w-24 shrink-0 overflow-hidden rounded-lg border border-[var(--border-light)] bg-[var(--accent-soft)]">
+            <img
+              src={imageForProduct(item.product.id, item.product.imageUrl)}
+              alt={item.product.name}
+              loading="lazy"
+              className="h-full w-full object-cover"
+            />
+          </div>
+
+          <div className="min-w-0">
+            <p className="truncate text-sm font-semibold text-[var(--foreground)] sm:text-base">{item.product.name}</p>
+            <p className="mt-1 text-sm text-[var(--text-muted)]">
+              {formatCurrency(item.product.price)} • Estoque: {item.product.stock}
+            </p>
+            <p className="mt-2 text-sm font-medium text-[var(--foreground)]">Subtotal: {formatCurrency(item.lineSubtotal)}</p>
+          </div>
         </div>
 
-        <div className="grid gap-2 md:min-w-[280px]">
+        <div className="grid gap-2 sm:min-w-[280px]">
           <div className="grid grid-cols-[auto_1fr_auto] gap-2">
             <Button
               type="button"
@@ -76,16 +92,9 @@ function CartLineItem({
             >
               -
             </Button>
-            <input
-              type="number"
-              min="1"
-              step="1"
-              value={quantityText}
-              onChange={(e) => setQuantityText(e.target.value)}
-              aria-label={`Quantidade de ${item.product.name}`}
-              className="rounded border border-[var(--border-default)] px-3 py-2"
-              disabled={isUpdating || isRemoving}
-            />
+            <div className="flex items-center justify-center rounded border border-[var(--border-default)] px-3 py-2 text-sm font-semibold text-[var(--foreground)]">
+              {item.quantity}
+            </div>
             <Button
               type="button"
               variant="outline"
@@ -100,21 +109,6 @@ function CartLineItem({
           <div className="flex gap-2">
             <Button
               type="button"
-              variant="outline"
-              size="sm"
-              disabled={isUpdating || isRemoving || !isQuantityValid}
-              onClick={() => {
-                if (!isQuantityValid) {
-                  onValidationError("Quantidade invalida");
-                  return;
-                }
-                onUpdate(item.id, quantityValue).catch(() => {});
-              }}
-            >
-              {isUpdating ? "Salvando..." : "Atualizar"}
-            </Button>
-            <Button
-              type="button"
               variant="text"
               disabled={isUpdating || isRemoving}
               onClick={() => onRemove(item.id).catch(() => {})}
@@ -123,9 +117,6 @@ function CartLineItem({
               {isRemoving ? "Removendo..." : "Remover"}
             </Button>
           </div>
-          <p className="text-sm text-[var(--text-muted)]">
-            Subtotal: R$ {Number(item.lineSubtotal).toFixed(2)}
-          </p>
         </div>
       </div>
     </Card>
@@ -142,10 +133,6 @@ export default function CarrinhoPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const [cart, setCart] = useState<CartData | null>(null);
-
-  const [newProductId, setNewProductId] = useState("");
-  const [newQuantity, setNewQuantity] = useState("1");
-  const [adding, setAdding] = useState(false);
 
   const [updatingItemId, setUpdatingItemId] = useState<string | null>(null);
   const [removingItemId, setRemovingItemId] = useState<string | null>(null);
@@ -199,52 +186,6 @@ export default function CarrinhoPage() {
       });
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
-
-  async function handleAddItem(e: FormEvent) {
-    e.preventDefault();
-    setAdding(true);
-    setError("");
-
-    try {
-      if (!newProductId.trim()) {
-        throw new Error("Informe o ID do produto");
-      }
-
-      const parsedQuantity = Number(newQuantity);
-      if (!Number.isInteger(parsedQuantity) || parsedQuantity < 1) {
-        throw new Error("Quantidade invalida");
-      }
-
-      const token = getAuthToken();
-      if (!token) throw new Error("Token ausente");
-
-      const response = await fetch("/api/cart/items", {
-        method: "POST",
-        headers: {
-          "content-type": "application/json",
-          authorization: `Bearer ${token}`,
-        },
-        body: JSON.stringify({
-          productId: newProductId.trim(),
-          quantity: parsedQuantity,
-        }),
-      });
-
-      const data = (await response.json()) as { error?: string };
-
-      if (!response.ok) {
-        throw new Error(data.error || "Erro ao adicionar item");
-      }
-
-      setNewProductId("");
-      setNewQuantity("1");
-      await fetchCart();
-    } catch (e: unknown) {
-      setError(e instanceof Error ? e.message : "Erro ao adicionar item");
-    } finally {
-      setAdding(false);
-    }
-  }
 
   async function handleUpdateItem(itemId: string, quantity: number) {
     setUpdatingItemId(itemId);
@@ -378,7 +319,7 @@ export default function CarrinhoPage() {
   }
 
   return (
-    <PageContainer maxWidth="4xl">
+    <PageContainer maxWidth="5xl">
       <PageHeader
         title="Carrinho"
         actions={
@@ -392,88 +333,72 @@ export default function CarrinhoPage() {
 
       <Alert message={error} />
 
-      <Card title="Adicionar item" contentClassName="mt-3">
-        <form onSubmit={handleAddItem} className="grid gap-3 md:grid-cols-[1fr_120px_auto]">
-          <input
-            value={newProductId}
-            onChange={(e) => setNewProductId(e.target.value)}
-            placeholder="ID do produto"
-            aria-label="ID do produto para adicionar ao carrinho"
-            className="rounded border border-[var(--border-default)] px-3 py-2"
-            required
-            disabled={adding}
-          />
-          <input
-            type="number"
-            min="1"
-            step="1"
-            value={newQuantity}
-            onChange={(e) => setNewQuantity(e.target.value)}
-            aria-label="Quantidade para adicionar ao carrinho"
-            className="rounded border border-[var(--border-default)] px-3 py-2"
-            required
-            disabled={adding}
-          />
-          <Button type="submit" disabled={adding}>
-            {adding ? "Adicionando..." : "Adicionar"}
-          </Button>
-        </form>
-      </Card>
-
-      <Card
-        title={`Itens (${cart?.itemCount ?? 0})`}
-        contentClassName="mt-3"
-      >
-        {!cart || cart.items.length === 0 ? (
-          <p className="text-[var(--text-muted)]">Seu carrinho esta vazio.</p>
-        ) : (
-          <ul className="flex flex-col gap-2">
-            {cart.items.map((item) => (
-              <CartLineItem
-                key={`${item.id}-${item.quantity}`}
-                item={item}
-                isUpdating={updatingItemId === item.id}
-                isRemoving={removingItemId === item.id}
-                onUpdate={handleUpdateItem}
-                onRemove={handleRemoveItem}
-                onValidationError={setError}
-              />
-            ))}
-          </ul>
-        )}
-      </Card>
-
-      <Card>
-        <div className="flex flex-wrap items-center justify-between gap-3">
-          <p className="text-lg font-semibold">Total: R$ {cart?.total ?? "0.00"}</p>
-          <div className="flex gap-2">
-            <Button
-              type="button"
-              disabled={finalizing || !cart || cart.items.length === 0}
-              onClick={() => handleCheckout().catch(() => {})}
-            >
-              {finalizing ? "Finalizando..." : "Finalizar compra"}
-            </Button>
-            <Button
-              type="button"
-              variant="outline"
-              size="sm"
-              onClick={() => fetchCart().catch((e) => setError(e instanceof Error ? e.message : "Erro"))}
-            >
-              Atualizar carrinho
-            </Button>
-            <Button
-              type="button"
-              variant="text"
-              onClick={() => handleClearCart().catch(() => {})}
-              disabled={clearing || !cart || cart.items.length === 0}
-              className="text-red-700"
-            >
-              {clearing ? "Limpando..." : "Limpar carrinho"}
-            </Button>
+      {!cart || cart.items.length === 0 ? (
+        <Card contentClassName="mt-2">
+          <div className="rounded-xl border border-[var(--border-light)] bg-[var(--surface)] p-8 text-center">
+            <p className="text-lg font-semibold text-[var(--foreground)]">Seu carrinho está vazio</p>
+            <p className="mt-2 text-sm text-[var(--text-muted)]">Adicione produtos pelo catálogo para continuar.</p>
+            <div className="mt-4">
+              <TextLink href="/produtos">Ir para produtos</TextLink>
+            </div>
           </div>
+        </Card>
+      ) : (
+        <div className="grid gap-4 lg:grid-cols-[1fr_320px]">
+          <Card title={`Itens no carrinho (${cart.itemCount})`} contentClassName="mt-3">
+            <ul className="flex flex-col gap-3">
+              {cart.items.map((item) => (
+                <CartLineItem
+                  key={`${item.id}-${item.quantity}`}
+                  item={item}
+                  isUpdating={updatingItemId === item.id}
+                  isRemoving={removingItemId === item.id}
+                  onUpdate={handleUpdateItem}
+                  onRemove={handleRemoveItem}
+                />
+              ))}
+            </ul>
+          </Card>
+
+          <Card title="Resumo do pedido" contentClassName="mt-3">
+            <div className="space-y-4">
+              <div className="space-y-2 text-sm">
+                <div className="flex items-center justify-between text-[var(--text-muted)]">
+                  <span>Itens</span>
+                  <span>{cart.itemCount}</span>
+                </div>
+                <div className="flex items-center justify-between text-[var(--text-muted)]">
+                  <span>Subtotal</span>
+                  <span>{formatCurrency(cart.total)}</span>
+                </div>
+                <div className="flex items-center justify-between border-t border-[var(--border-light)] pt-2 text-base font-semibold text-[var(--foreground)]">
+                  <span>Total</span>
+                  <span>{formatCurrency(cart.total)}</span>
+                </div>
+              </div>
+
+              <div className="flex items-center justify-between gap-2">
+                <Button
+                  type="button"
+                  variant="text"
+                  onClick={() => handleClearCart().catch(() => {})}
+                  disabled={clearing}
+                  className="text-red-700"
+                >
+                  {clearing ? "Limpando..." : "Limpar carrinho"}
+                </Button>
+                <Button
+                  type="button"
+                  disabled={finalizing}
+                  onClick={() => handleCheckout().catch(() => {})}
+                >
+                  {finalizing ? "Finalizando..." : "Finalizar compra"}
+                </Button>
+              </div>
+            </div>
+          </Card>
         </div>
-      </Card>
+      )}
     </PageContainer>
   );
 }

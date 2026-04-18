@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { Prisma } from "@prisma/client";
 import { prisma } from "@/lib/prisma";
-import { hashPassword, generateToken } from "@/lib/auth";
+import { hashPassword } from "@/lib/auth";
 import { RegisterSchema } from "@/lib/schemas";
 
 export async function POST(request: NextRequest) {
@@ -39,8 +39,6 @@ export async function POST(request: NextRequest) {
       },
     });
 
-    const token = generateToken(user.id, user.email);
-
     await prisma.cart.create({
       data: {
         userId: user.id,
@@ -50,7 +48,6 @@ export async function POST(request: NextRequest) {
     return NextResponse.json(
       {
         message: "Usuario registrado com sucesso",
-        token,
         user: {
           id: user.id,
           name: user.name,

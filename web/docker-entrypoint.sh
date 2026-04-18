@@ -10,6 +10,9 @@ echo "Waiting for database to be ready..."
 echo "Running migrations..."
 prisma migrate deploy
 
+echo "Seeding demo data..."
+node prisma/seed.js
+
 # Start the application
 echo "Starting application..."
 exec node server.js

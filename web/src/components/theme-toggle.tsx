@@ -31,28 +31,30 @@ function MoonIcon() {
 function resolveInitialTheme(): Theme {
   if (typeof window === "undefined") return "light";
 
-  const stored = window.localStorage.getItem("theme");
-  if (stored === "light" || stored === "dark") {
-    return stored;
+  const datasetTheme = document.documentElement.dataset.theme;
+  if (datasetTheme === "light" || datasetTheme === "dark") {
+    return datasetTheme;
   }
 
   return window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
 }
 
 export default function ThemeToggle() {
-  const [theme, setTheme] = useState<Theme>("light");
+  const [theme, setTheme] = useState<Theme>(() => resolveInitialTheme());
 
   useEffect(() => {
-    const initialTheme = resolveInitialTheme();
-    document.documentElement.dataset.theme = initialTheme;
+    const handleStorage = (event: StorageEvent) => {
+      if (event.key === "theme") {
+        setTheme(resolveInitialTheme());
+      }
+    };
 
-    if (initialTheme !== theme) {
-      const rafId = window.requestAnimationFrame(() => {
-        setTheme(initialTheme);
-      });
-      return () => window.cancelAnimationFrame(rafId);
-    }
-  }, [theme]);
+    window.addEventListener("storage", handleStorage);
+
+    return () => {
+      window.removeEventListener("storage", handleStorage);
+    };
+  }, []);
 
   const nextTheme: Theme = theme === "dark" ? "light" : "dark";
 

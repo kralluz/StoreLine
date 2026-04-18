@@ -7,6 +7,7 @@
     "build": "next build",
     "start": "next start",
     "lint": "eslint",
+    "db:seed": "node prisma/seed.js",
     "prisma:generate": "prisma generate",
     "postinstall": "prisma generate"
   },

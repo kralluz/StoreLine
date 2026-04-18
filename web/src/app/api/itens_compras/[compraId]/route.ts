@@ -42,7 +42,7 @@ export async function GET(request: NextRequest, { params }: Params) {
 
     return NextResponse.json(
       {
-        items: order.items.map((i: any) => ({
+        items: order.items.map((i) => ({
           id: i.id,
           productId: i.productId,
           productName: i.productName,

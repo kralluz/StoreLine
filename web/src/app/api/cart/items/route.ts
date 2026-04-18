@@ -59,12 +59,12 @@ export async function POST(request: NextRequest) {
       item = await prisma.cartItem.update({
         where: { id: existingItem.id },
         data: { quantity: newQuantity },
-        include: { product: { select: { id: true, name: true, price: true, stock: true } } },
+        include: { product: { select: { id: true, name: true, imageUrl: true, price: true, stock: true } } },
       });
     } else {
       item = await prisma.cartItem.create({
         data: { cartId: cart.id, productId, quantity },
-        include: { product: { select: { id: true, name: true, price: true, stock: true } } },
+        include: { product: { select: { id: true, name: true, imageUrl: true, price: true, stock: true } } },
       });
     }
 
