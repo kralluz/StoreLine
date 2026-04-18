@@ -43,8 +43,17 @@ export default function ThemeToggle() {
   const [theme, setTheme] = useState<Theme>(() => resolveInitialTheme());
 
   useEffect(() => {
-    const initialTheme = resolveInitialTheme();
-    setTheme(initialTheme);
+    const handleStorage = (event: StorageEvent) => {
+      if (event.key === "theme") {
+        setTheme(resolveInitialTheme());
+      }
+    };
+
+    window.addEventListener("storage", handleStorage);
+
+    return () => {
+      window.removeEventListener("storage", handleStorage);
+    };
   }, []);
 
   const nextTheme: Theme = theme === "dark" ? "light" : "dark";

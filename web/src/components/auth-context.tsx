@@ -38,15 +38,16 @@ function readStoredUser(): AuthUser | null {
 }
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
-  const [user, setUser] = useState<AuthUser | null>(null);
+  const [user, setUser] = useState<AuthUser | null>(() => {
+    if (typeof window === "undefined") return null;
+    return readStoredUser();
+  });
 
   const syncFromStorage = useCallback(() => {
     setUser(readStoredUser());
   }, []);
 
   useEffect(() => {
-    syncFromStorage();
-
     const onStorageOrFocus = () => syncFromStorage();
     window.addEventListener("storage", onStorageOrFocus);
     window.addEventListener("focus", onStorageOrFocus);
