@@ -1,0 +1,20 @@
+# IDE
+.vscode/
+.idea/
+*.swp
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+
+# Local scratch
+*.local
+/tmp/
+/StoreLine-clone-limpo/
+
+# Env (web tem o seu próprio .gitignore)
+.env
+.env.local
