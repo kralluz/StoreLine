@@ -6,7 +6,7 @@
 [![Prisma](https://img.shields.io/badge/Prisma-6-2D3748?logo=prisma)](https://www.prisma.io)
 [![PostgreSQL](https://img.shields.io/badge/PostgreSQL-15-4169E1?logo=postgresql)](https://www.postgresql.org)
 
-Loja virtual enxuta — projeto acadêmico de Engenharia de Software.
+Loja virtual enxuta — projeto acadêmico de Sistemas de Informação.
 
 Três fluxos:
 
