@@ -32,6 +32,11 @@ jobs:
         env:
           DATABASE_URL: postgresql://placeholder:placeholder@localhost:5432/placeholder
 
+      - name: Install Linux native binaries (lightningcss)
+        run: npm install lightningcss-linux-x64-gnu --no-save --no-package-lock
+        env:
+          DATABASE_URL: postgresql://placeholder:placeholder@localhost:5432/placeholder
+
       - name: Generate Prisma Client
         run: npx prisma generate
         env:
