@@ -14,8 +14,10 @@ export async function GET(request: NextRequest) {
       return NextResponse.json({ error: "Token invalido" }, { status: 401 });
     }
 
-    const cart = await prisma.cart.findUnique({
+    const cart = await prisma.cart.upsert({
       where: { userId: payload.userId },
+      update: {},
+      create: { userId: payload.userId },
       include: {
         items: {
           include: {
@@ -34,10 +36,6 @@ export async function GET(request: NextRequest) {
         },
       },
     });
-
-    if (!cart) {
-      return NextResponse.json({ error: "Carrinho nao encontrado" }, { status: 404 });
-    }
 
     const total = cart.items.reduce(
       (sum, item) => sum + Number(item.product.price) * item.quantity,
@@ -77,11 +75,9 @@ export async function DELETE(request: NextRequest) {
       where: { userId: payload.userId },
     });
 
-    if (!cart) {
-      return NextResponse.json({ error: "Carrinho nao encontrado" }, { status: 404 });
+    if (cart) {
+      await prisma.cartItem.deleteMany({ where: { cartId: cart.id } });
     }
-
-    await prisma.cartItem.deleteMany({ where: { cartId: cart.id } });
 
     return NextResponse.json({ message: "Carrinho limpo com sucesso" });
   } catch (error) {
