@@ -6,6 +6,16 @@ import { useRouter } from "next/navigation";
 import { useAuth } from "@/components/auth-context";
 import ThemeToggle from "@/components/theme-toggle";
 
+function CartIcon() {
+  return (
+    <svg viewBox="0 0 24 24" aria-hidden="true" className="h-5 w-5" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+      <circle cx="9" cy="21" r="1" />
+      <circle cx="20" cy="21" r="1" />
+      <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6" />
+    </svg>
+  );
+}
+
 function AvatarIcon() {
   return (
     <svg viewBox="0 0 24 24" aria-hidden="true" className="h-5 w-5" fill="none" stroke="currentColor" strokeWidth="1.8">
@@ -37,6 +47,7 @@ export default function AuthStatus() {
   const menuRef = useRef<HTMLDivElement | null>(null);
   const [open, setOpen] = useState(false);
   const [cartCount, setCartCount] = useState(0);
+  const [cartBump, setCartBump] = useState(false);
   const { user, logout } = useAuth();
   const isAdmin = user?.role === "ADMIN";
 
@@ -64,7 +75,14 @@ export default function AuthStatus() {
           return;
         }
 
-        setCartCount(Number(data?.itemCount ?? 0));
+        const next = Number(data?.itemCount ?? 0);
+        setCartCount((prev) => {
+          if (next > prev) {
+            setCartBump(true);
+            setTimeout(() => setCartBump(false), 500);
+          }
+          return next;
+        });
       } catch {
         setCartCount(0);
       }
@@ -117,7 +135,6 @@ export default function AuthStatus() {
 
   const menuItems = user
     ? [
-        { href: "/carrinho", label: "Carrinho" },
         { href: "/compras", label: "Minhas compras" },
         ...(isAdmin
           ? [
@@ -148,6 +165,20 @@ export default function AuthStatus() {
   }
 
   return (
+    <div className="flex items-center gap-2">
+      {cartCount > 0 ? (
+        <Link
+          href="/carrinho"
+          aria-label={`Carrinho com ${cartCount} ${cartCount === 1 ? "item" : "itens"}`}
+          className={`relative flex items-center justify-center rounded-full border border-[var(--border-default)] bg-[var(--surface)]/90 p-2.5 shadow-sm transition hover:border-[var(--accent)]/45 hover:shadow-md${cartBump ? " animate-bounce" : ""}`}
+        >
+          <CartIcon />
+          <span className="absolute -right-0.5 -top-0.5 inline-flex min-w-5 items-center justify-center rounded-full bg-[#dc2626] px-1.5 py-0.5 text-[11px] font-semibold text-white">
+            {cartCount > 99 ? "99+" : cartCount}
+          </span>
+        </Link>
+      ) : null}
+
     <div ref={menuRef} className="relative">
       <button
         type="button"
@@ -159,11 +190,6 @@ export default function AuthStatus() {
         <span className="flex h-9 w-9 items-center justify-center rounded-full bg-[var(--accent-soft)] text-xs font-semibold text-[var(--accent)]">
           {user ? initials(user.name) : <AvatarIcon />}
         </span>
-        {cartCount > 0 ? (
-          <span className="absolute -right-0.5 -top-0.5 inline-flex min-w-5 items-center justify-center rounded-full bg-[#dc2626] px-1.5 py-0.5 text-[11px] font-semibold text-white">
-            {cartCount > 99 ? "99+" : cartCount}
-          </span>
-        ) : null}
       </button>
 
       {open ? (
@@ -185,11 +211,6 @@ export default function AuthStatus() {
                 className="flex items-center rounded-xl px-3 py-2.5 text-sm font-medium text-[var(--foreground)] hover:bg-[var(--accent-soft)] hover:text-[var(--accent)]"
               >
                 {item.label}
-                {item.href === "/carrinho" && cartCount > 0 ? (
-                  <span className="ml-auto rounded-full bg-[#dc2626] px-2 py-0.5 text-[11px] font-semibold text-white">
-                    {cartCount > 99 ? "99+" : cartCount}
-                  </span>
-                ) : null}
               </Link>
             ))}
 
@@ -211,6 +232,7 @@ export default function AuthStatus() {
           </div>
         </div>
       ) : null}
+    </div>
     </div>
   );
 }
