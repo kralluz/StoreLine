@@ -5,10 +5,10 @@ import { cn } from "@/lib/cn";
 type LinkVariant = "text" | "chip" | "chipPrimary";
 
 const variantClasses: Record<LinkVariant, string> = {
-  text: "text-sm text-[#00674F] underline underline-offset-2 hover:text-[#005641]",
-  chip: "rounded-xl border border-[#00674F]/30 bg-[var(--surface)]/80 px-3 py-1.5 text-sm font-medium text-[#00674F] hover:border-[#00674F]/55 hover:bg-[#E7F2EE]",
+  text: "text-sm font-medium text-[var(--accent)] underline underline-offset-2 hover:text-[var(--button-primary-hover)]",
+  chip: "inline-flex items-center rounded-xl border border-[var(--border-default)] bg-[var(--surface)] px-3.5 py-2 text-sm font-medium text-[var(--foreground)] shadow-sm transition hover:border-[var(--accent)]/50 hover:bg-[var(--accent-soft)] hover:text-[var(--accent)] hover:shadow-md focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--accent)]",
   chipPrimary:
-    "rounded-xl bg-[#00674F] px-3 py-1.5 text-sm font-medium text-white shadow-sm hover:bg-[#005641] hover:shadow-md",
+    "inline-flex items-center rounded-xl bg-[var(--button-primary)] px-4 py-2 text-sm font-semibold text-white shadow-sm transition hover:bg-[var(--button-primary-hover)] hover:shadow-md focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--accent)]",
 };
 
 type Props = LinkProps & {

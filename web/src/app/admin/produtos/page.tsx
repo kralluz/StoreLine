@@ -211,8 +211,8 @@ export default function AdminProdutosPage() {
         title="Admin / Produtos"
         actions={
           <>
-            <TextLink href="/produtos">Ver listagem publica</TextLink>
-            <TextLink href="/">Home</TextLink>
+            <TextLink href="/produtos" variant="chip">Ver listagem publica</TextLink>
+            <TextLink href="/" variant="chip">Home</TextLink>
           </>
         }
       />
