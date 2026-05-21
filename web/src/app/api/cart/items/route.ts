@@ -38,10 +38,11 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const cart = await prisma.cart.findUnique({ where: { userId: payload.userId } });
-    if (!cart) {
-      return NextResponse.json({ error: "Carrinho nao encontrado" }, { status: 404 });
-    }
+    const cart = await prisma.cart.upsert({
+      where: { userId: payload.userId },
+      update: {},
+      create: { userId: payload.userId },
+    });
 
     const existingItem = await prisma.cartItem.findUnique({
       where: { cartId_productId: { cartId: cart.id, productId } },
