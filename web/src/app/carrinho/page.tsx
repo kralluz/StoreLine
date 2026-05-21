@@ -324,9 +324,9 @@ export default function CarrinhoPage() {
         title="Carrinho"
         actions={
           <>
-            <TextLink href="/produtos">Ver produtos</TextLink>
-            <TextLink href="/compras">Minhas compras</TextLink>
-            <TextLink href="/">Home</TextLink>
+            <TextLink href="/produtos" variant="chip">Ver produtos</TextLink>
+            <TextLink href="/compras" variant="chip">Minhas compras</TextLink>
+            <TextLink href="/" variant="chip">Home</TextLink>
           </>
         }
       />
@@ -338,8 +338,8 @@ export default function CarrinhoPage() {
           <div className="rounded-xl border border-[var(--border-light)] bg-[var(--surface)] p-8 text-center">
             <p className="text-lg font-semibold text-[var(--foreground)]">Seu carrinho está vazio</p>
             <p className="mt-2 text-sm text-[var(--text-muted)]">Adicione produtos pelo catálogo para continuar.</p>
-            <div className="mt-4">
-              <TextLink href="/produtos">Ir para produtos</TextLink>
+            <div className="mt-4 flex justify-center">
+              <TextLink href="/produtos" variant="chipPrimary">Ir para produtos</TextLink>
             </div>
           </div>
         </Card>

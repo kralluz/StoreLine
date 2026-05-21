@@ -44,12 +44,16 @@ COPY --from=builder /app/public ./public
 COPY --from=builder /app/.next/standalone ./
 COPY --from=builder /app/.next/static ./.next/static
 
+# Standalone trace nao inclui deps usadas apenas pelo seed (bcryptjs).
+# Copia do builder para garantir que seed funcione.
+COPY --from=builder /app/node_modules/bcryptjs ./node_modules/bcryptjs
+
 # Setup entrypoint, Prisma and environment
 COPY --from=builder /app/prisma ./prisma
 COPY --from=builder /app/.env.example ./.env
 COPY --from=builder /app/docker-entrypoint.sh ./docker-entrypoint.sh
-RUN chmod +x ./docker-entrypoint.sh
-RUN npm install -g prisma
+RUN sed -i 's/\r$//' ./docker-entrypoint.sh && chmod +x ./docker-entrypoint.sh
+RUN npm install -g prisma@6
 
 EXPOSE 3000
 

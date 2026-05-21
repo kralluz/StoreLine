@@ -74,6 +74,34 @@ h3 {
   color: var(--foreground);
 }
 
+html {
+  scrollbar-width: thin;
+  scrollbar-color: var(--border-default) var(--background);
+}
+
+::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--background);
+}
+
+::-webkit-scrollbar-thumb {
+  background: color-mix(in srgb, var(--border-default) 80%, var(--surface));
+  border-radius: 999px;
+  border: 2px solid var(--background);
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: color-mix(in srgb, var(--accent) 40%, var(--border-default));
+}
+
+::-webkit-scrollbar-corner {
+  background: var(--background);
+}
+
 .store-carousel {
   scrollbar-width: thin;
   scrollbar-color: var(--border-default) transparent;
