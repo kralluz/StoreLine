@@ -112,7 +112,7 @@ function CartLineItem({
               variant="text"
               disabled={isUpdating || isRemoving}
               onClick={() => onRemove(item.id).catch(() => {})}
-              className="text-red-700"
+              className="text-[var(--status-error)] hover:bg-[color-mix(in_srgb,var(--status-error)_10%,transparent)]"
             >
               {isRemoving ? "Removendo..." : "Remover"}
             </Button>
@@ -383,7 +383,7 @@ export default function CarrinhoPage() {
                   variant="text"
                   onClick={() => handleClearCart().catch(() => {})}
                   disabled={clearing}
-                  className="text-red-700"
+                  className="text-[var(--status-error)] hover:bg-[color-mix(in_srgb,var(--status-error)_10%,transparent)]"
                 >
                   {clearing ? "Limpando..." : "Limpar carrinho"}
                 </Button>
