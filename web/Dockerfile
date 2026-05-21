@@ -44,6 +44,10 @@ COPY --from=builder /app/public ./public
 COPY --from=builder /app/.next/standalone ./
 COPY --from=builder /app/.next/static ./.next/static
 
+# Standalone trace nao inclui deps usadas apenas pelo seed (bcryptjs).
+# Copia do builder para garantir que seed funcione.
+COPY --from=builder /app/node_modules/bcryptjs ./node_modules/bcryptjs
+
 # Setup entrypoint, Prisma and environment
 COPY --from=builder /app/prisma ./prisma
 COPY --from=builder /app/.env.example ./.env
