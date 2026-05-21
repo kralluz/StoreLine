@@ -60,9 +60,9 @@ function CartLineItem({
 }: CartLineItemProps) {
   return (
     <Card as="li" className="p-4" contentClassName="">
-      <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
+      <div className="flex flex-col gap-3">
         <div className="flex min-w-0 gap-3">
-          <div className="h-20 w-24 shrink-0 overflow-hidden rounded-lg border border-[var(--border-light)] bg-[var(--accent-soft)]">
+          <div className="h-20 w-20 shrink-0 overflow-hidden rounded-lg border border-[var(--border-light)] bg-[var(--accent-soft)]">
             <img
               src={imageForProduct(item.product.id, item.product.imageUrl)}
               alt={item.product.name}
@@ -71,52 +71,49 @@ function CartLineItem({
             />
           </div>
 
-          <div className="min-w-0">
-            <p className="truncate text-sm font-semibold text-[var(--foreground)] sm:text-base">{item.product.name}</p>
+          <div className="min-w-0 flex-1">
+            <p className="text-sm font-semibold text-[var(--foreground)]">{item.product.name}</p>
             <p className="mt-1 text-sm text-[var(--text-muted)]">
               {formatCurrency(item.product.price)} • Estoque: {item.product.stock}
             </p>
-            <p className="mt-2 text-sm font-medium text-[var(--foreground)]">Subtotal: {formatCurrency(item.lineSubtotal)}</p>
+            <p className="mt-1 text-sm font-medium text-[var(--foreground)]">Subtotal: {formatCurrency(item.lineSubtotal)}</p>
           </div>
         </div>
 
-        <div className="grid gap-2 sm:min-w-[280px]">
-          <div className="grid grid-cols-[auto_1fr_auto] gap-2">
-            <Button
-              type="button"
-              variant="outline"
-              size="sm"
-              aria-label={`Diminuir quantidade de ${item.product.name}`}
-              disabled={isUpdating || isRemoving || item.quantity <= 1}
-              onClick={() => onUpdate(item.id, item.quantity - 1).catch(() => {})}
-            >
-              -
-            </Button>
-            <div className="flex items-center justify-center rounded border border-[var(--border-default)] px-3 py-2 text-sm font-semibold text-[var(--foreground)]">
-              {item.quantity}
-            </div>
-            <Button
-              type="button"
-              variant="outline"
-              size="sm"
-              aria-label={`Aumentar quantidade de ${item.product.name}`}
-              disabled={isUpdating || isRemoving || item.quantity >= item.product.stock}
-              onClick={() => onUpdate(item.id, item.quantity + 1).catch(() => {})}
-            >
-              +
-            </Button>
+        <div className="flex items-center gap-2">
+          <Button
+            type="button"
+            variant="outline"
+            size="sm"
+            aria-label={`Diminuir quantidade de ${item.product.name}`}
+            disabled={isUpdating || isRemoving || item.quantity <= 1}
+            onClick={() => onUpdate(item.id, item.quantity - 1).catch(() => {})}
+          >
+            -
+          </Button>
+          <div className="flex min-w-[2.5rem] items-center justify-center rounded border border-[var(--border-default)] px-3 py-1.5 text-sm font-semibold text-[var(--foreground)]">
+            {item.quantity}
           </div>
-          <div className="flex gap-2">
-            <Button
-              type="button"
-              variant="text"
-              disabled={isUpdating || isRemoving}
-              onClick={() => onRemove(item.id).catch(() => {})}
-              className="text-[var(--status-error)] hover:bg-[color-mix(in_srgb,var(--status-error)_10%,transparent)]"
-            >
-              {isRemoving ? "Removendo..." : "Remover"}
-            </Button>
-          </div>
+          <Button
+            type="button"
+            variant="outline"
+            size="sm"
+            aria-label={`Aumentar quantidade de ${item.product.name}`}
+            disabled={isUpdating || isRemoving || item.quantity >= item.product.stock}
+            onClick={() => onUpdate(item.id, item.quantity + 1).catch(() => {})}
+          >
+            +
+          </Button>
+          <Button
+            type="button"
+            variant="text"
+            size="sm"
+            disabled={isUpdating || isRemoving}
+            onClick={() => onRemove(item.id).catch(() => {})}
+            className="ml-auto text-[var(--status-error)] hover:bg-[color-mix(in_srgb,var(--status-error)_10%,transparent)]"
+          >
+            {isRemoving ? "Removendo..." : "Remover"}
+          </Button>
         </div>
       </div>
     </Card>
