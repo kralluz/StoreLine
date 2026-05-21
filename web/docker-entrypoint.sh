@@ -1,18 +1,28 @@
 #!/bin/sh
+set -e
 
-# Wait for database to be ready
-echo "Waiting for database to be ready..."
-# We can use a simple netcat or just let prisma fail and retry if we want,
-# but for simplicity in this script, we'll assume the db is up after some time 
-# or use the healthcheck in docker-compose.
+echo "[entrypoint] Waiting for database..."
+i=0
+until node -e "const{PrismaClient}=require('@prisma/client');new PrismaClient().\$queryRaw\`SELECT 1\`.then(()=>process.exit(0)).catch(()=>process.exit(1))" 2>/dev/null; do
+  i=$((i+1))
+  if [ $i -ge 30 ]; then
+    echo "[entrypoint] Database wait timed out after 60s"
+    exit 1
+  fi
+  echo "[entrypoint] DB not ready yet (attempt $i/30), retrying..."
+  sleep 2
+done
+echo "[entrypoint] Database is ready."
 
-# Run migrations
-echo "Running migrations..."
+echo "[entrypoint] Running migrations..."
 prisma migrate deploy
 
-echo "Seeding demo data..."
-node prisma/seed.js
+echo "[entrypoint] Running seed..."
+if node prisma/seed.js; then
+  echo "[entrypoint] Seed completed successfully."
+else
+  echo "[entrypoint] Seed FAILED (exit $?). Continuing anyway."
+fi
 
-# Start the application
-echo "Starting application..."
+echo "[entrypoint] Starting application..."
 exec node server.js
