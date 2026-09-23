@@ -98,9 +98,17 @@ export default function LoginPage() {
         </button>
       </form>
 
-      <p className="mt-4 text-sm text-[var(--text-muted)]">
-        Nao tem conta? <Link href="/auth/register" className="underline">Registre-se</Link>
-      </p>
+      <div className="mt-4 flex flex-col gap-1 text-sm text-[var(--text-muted)]">
+        <Link href="/auth/forgot-password" className="underline">
+          Esqueci minha senha
+        </Link>
+        <p>
+          Nao tem conta?{" "}
+          <Link href="/auth/register" className="underline">
+            Registre-se
+          </Link>
+        </p>
+      </div>
     </div>
   );
 }

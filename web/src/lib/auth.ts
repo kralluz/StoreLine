@@ -1,3 +1,4 @@
+import * as crypto from "crypto";
 import * as bcrypt from "bcryptjs";
 import * as jwt from "jsonwebtoken";
 
@@ -35,3 +36,20 @@ export function extractTokenFromHeader(authHeader?: string): string | null {
   }
   return authHeader.substring(7);
 }
+
+const RESET_CODE_EXPIRY_MINUTES = 10;
+const MAX_RESET_ATTEMPTS = 3;
+
+export function generateResetCode(): string {
+  return crypto.randomInt(0, 1000000).toString().padStart(6, "0");
+}
+
+export function getResetCodeExpiry(): Date {
+  return new Date(Date.now() + RESET_CODE_EXPIRY_MINUTES * 60 * 1000);
+}
+
+export function isResetCodeExpired(expiry: Date): boolean {
+  return new Date() >= expiry;
+}
+
+export { MAX_RESET_ATTEMPTS };
