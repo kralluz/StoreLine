@@ -42,5 +42,23 @@ export type RegisterInput = z.infer<typeof RegisterSchema>;
 export type LoginInput = z.infer<typeof LoginSchema>;
 export type ProductCreateInput = z.infer<typeof ProductCreateSchema>;
 export type ProductUpdateInput = z.infer<typeof ProductUpdateSchema>;
+export const ForgotPasswordSchema = z.object({
+  email: z.string().email("Email invalido"),
+});
+
+export const VerifyResetCodeSchema = z.object({
+  email: z.string().email("Email invalido"),
+  code: z.string().length(6, "Codigo deve ter 6 digitos").regex(/^\d{6}$/, "Codigo deve conter apenas numeros"),
+});
+
+export const ResetPasswordSchema = z.object({
+  email: z.string().email("Email invalido"),
+  code: z.string().length(6, "Codigo deve ter 6 digitos").regex(/^\d{6}$/, "Codigo deve conter apenas numeros"),
+  newPassword: z.string().min(6, "Senha deve ter no minimo 6 caracteres"),
+});
+
 export type AddCartItemInput = z.infer<typeof AddCartItemSchema>;
 export type UpdateCartItemInput = z.infer<typeof UpdateCartItemSchema>;
+export type ForgotPasswordInput = z.infer<typeof ForgotPasswordSchema>;
+export type VerifyResetCodeInput = z.infer<typeof VerifyResetCodeSchema>;
+export type ResetPasswordInput = z.infer<typeof ResetPasswordSchema>;

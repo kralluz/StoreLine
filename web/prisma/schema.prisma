@@ -25,6 +25,10 @@ model User {
   passwordHash String
   role         UserRole @default(USER)
 
+  resetCode       String?
+  resetCodeExpiry DateTime?
+  resetAttempts   Int      @default(0)
+
   cart   Cart?
   orders Order[]
 
